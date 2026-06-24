@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AREA TROUT MAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --ink: #0b2730;
+      --deep: #08252d;
+      --green: #0f7f70;
+      --green-2: #159a85;
+      --mint: #e8f7f2;
+      --line: #dce7e5;
+      --soft: #f4f8f7;
+      --orange: #d98222;
+      --gold: #e0a326;
+      --blue: #287f94;
+      --white: #fff;
+      --shadow: 0 14px 36px rgba(10, 35, 40, .18);
+      --shadow-soft: 0 8px 22px rgba(10, 35, 40, .10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #eaf3f1;
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 92px 1fr;
+    }
+
+    .header {
+      position: relative;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 16px 26px 16px 40px;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 72% -35%, rgba(28, 151, 139, .32), transparent 34%),
+        linear-gradient(90deg, #071f28 0%, #092933 48%, #071d26 100%);
+      box-shadow: 0 10px 28px rgba(5, 20, 25, .25);
+    }
+
+    .brand {
+      min-width: 455px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .brand-mark svg {
+      width: 42px;
+      height: 42px;
+      filter: drop-shadow(0 2px 1px rgba(0, 0, 0, .2));
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: "Montserrat", "Noto Sans JP", sans-serif;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .05em;
+    }
+
+    .brand-copy {
+      margin: 6px 0 0;
+      font-size: 14px;
+      color: rgba(255, 255, 255, .84);
+      font-weight: 500;
+    }
+
+    .nav {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 22px;
+      height: 100%;
+    }
+
+    .nav a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255, 255, 255, .95);
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+      font-size: 15px;
+    }
+
+    .nav a:first-child::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--green-2);
+    }
+
+    .nav svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .weather {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 9px 16px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .06);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+
+    .weather-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .12);
+      font-size: 22px;
+    }
+
+    .temp {
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .place {
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .78);
+      font-weight: 500;
+    }
+
+    .menu {
+      width: 56px;
+      height: 56px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 14px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .05);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 516px 1fr;
+      position: relative;
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 20;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 22px 17px 28px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 12px 0 30px rgba(11, 39, 48, .09);
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 54px;
+      padding: 0 54px 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--ink);
+      background: var(--white);
+      outline: none;
+      box-shadow: 0 2px 0 rgba(7, 37, 45, .02);
+      font-weight: 500;
+    }
+
+    .search-box input::placeholder {
+      color: #8a9999;
+    }
+
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      color: var(--ink);
+    }
+
+    .filter-card {
+      margin-bottom: 11px;
+      padding: 14px 13px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .filter-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .reset {
+      border: 0;
+      color: var(--green);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .quick-filters,
+    .type-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      min-height: 36px;
+      padding: 8px 17px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #162c32;
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(9, 39, 48, .04);
+    }
+
+    .chip.active {
+      color: var(--white);
+      border-color: var(--green);
+      background: var(--green);
+      box-shadow: 0 6px 15px rgba(15, 127, 112, .24);
+    }
+
+    .type-filters {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      margin-bottom: 16px;
+    }
+
+    .type-btn {
+      min-height: 64px;
+      padding: 8px 5px;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #142f36;
+      background: #fbfdfd;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 2px 7px rgba(9, 39, 48, .04);
+    }
+
+    .type-btn svg {
+      width: 23px;
+      height: 23px;
+    }
+
+    .type-btn.active {
+      color: var(--white);
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .result-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 2px 2px 12px;
+    }
+
+    .result-count {
+      font-size: 13px;
+      color: #617174;
+      font-weight: 500;
+    }
+
+    .result-count strong {
+      color: var(--ink);
+      font-size: 21px;
+      margin-right: 4px;
+    }
+
+    .sort {
+      width: 124px;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .cards {
+      display: grid;
+      gap: 20px;
+    }
+
+    .facility-card {
+      display: grid;
+      grid-template-columns: 132px 1fr 44px;
+      gap: 14px;
+      min-height: 134px;
+      padding: 12px;
+      border: 1px solid #dfe7e5;
+      border-radius: 9px;
+      background: var(--white);
+      box-shadow: var(--shadow-soft);
+      transition: .18s ease;
+    }
+
+    .facility-card:hover,
+    .facility-card.selected {
+      border-color: var(--green-2);
+      box-shadow: 0 10px 26px rgba(15, 127, 112, .16);
+      transform: translateY(-1px);
+    }
+
+    .thumb {
+      position: relative;
+      overflow: hidden;
+      border-radius: 7px;
+      background:
+        linear-gradient(175deg, rgba(15, 127, 112, .1), rgba(4, 24, 28, .35)),
+        var(--photo);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .badge-open {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 7px;
+      color: var(--white);
+      background: var(--green-2);
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 3px 9px rgba(0, 0, 0, .14);
+    }
+
+    .thumb .badge-open {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+    }
+
+    .thumb-fish {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(18, 125, 113, .92);
+      color: var(--white);
+    }
+
+    .facility-main {
+      min-width: 0;
+    }
+
+    .facility-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .facility-title {
+      margin: 2px 0 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .area {
+      margin: 0 0 10px;
+      color: #4b5d61;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+      color: #142b31;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .star {
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      min-height: 22px;
+      padding: 3px 7px;
+      border: 1px solid #cae7e0;
+      border-radius: 5px;
+      color: #0a7b6d;
+      background: #f6fffc;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tag.blue {
+      color: #246d94;
+      border-color: #cce3ee;
+      background: #f2fbff;
+    }
+
+    .tag.pink {
+      color: #a24c61;
+      border-color: #efd3da;
+      background: #fff8fa;
+    }
+
+    .meta {
+      display: flex;
+      gap: 13px;
+      flex-wrap: wrap;
+      color: #4b6165;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .favorite {
+      align-self: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: #112d34;
+      background: var(--white);
+      box-shadow: 0 5px 14px rgba(10, 35, 40, .12);
+      font-size: 21px;
+    }
+
+    .favorite.active {
+      color: #e45c5c;
+    }
+
+    .map-wrap {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: #bfe0e6;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .leaflet-control-container {
+      display: none;
+    }
+
+    .layer-panel {
+      position: absolute;
+      top: 28px;
+      left: 24px;
+      z-index: 10;
+      width: 124px;
+      overflow: hidden;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .layer-panel button {
+      width: 100%;
+      height: 41px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 13px;
+      border: 0;
+      border-bottom: 1px solid #edf1f0;
+      color: #173239;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .layer-panel button:hover,
+    .layer-panel button.active {
+      background: #eef9f6;
+      color: var(--green);
+    }
+
+    .map-search {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      z-index: 10;
+      transform: translateX(-50%);
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(8, 37, 45, .93);
+      box-shadow: var(--shadow-soft);
+      font-weight: 700;
+    }
+
+    .view-toggle {
+      position: absolute;
+      top: 28px;
+      right: 70px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      padding: 7px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .75);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(8px);
+    }
+
+    .view-toggle button {
+      min-width: 62px;
+      height: 38px;
+      border: 0;
+      border-radius: 7px;
+      color: #173239;
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .view-toggle button.active {
+      background: var(--white);
+      box-shadow: 0 3px 10px rgba(15, 44, 50, .12);
+    }
+
+    .expand,
+    .zoom-control {
+      position: absolute;
+      right: 24px;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 9px;
+      color: #122d34;
+      background: var(--white);
+      box-shadow: var(--shadow-soft);
+      font-weight: 700;
+    }
+
+    .expand {
+      top: 28px;
+      width: 44px;
+      height: 44px;
+      font-size: 22px;
+    }
+
+    .zoom-control {
+      bottom: 84px;
+      width: 44px;
+      overflow: hidden;
+    }
+
+    .zoom-control button {
+      width: 44px;
+      height: 40px;
+      border: 0;
+      background: var(--white);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .zoom-control button + button {
+      border-top: 1px solid var(--line);
+    }
+
+    .scale {
+      position: absolute;
+      right: 24px;
+      bottom: 26px;
+      z-index: 10;
+      width: 96px;
+      height: 34px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      padding-bottom: 8px;
+      border-radius: 7px;
+      color: #4c666b;
+      background: rgba(255, 255, 255, .52);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .scale::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 9px;
+      height: 1px;
+      background: #5d7b83;
+    }
+
+    .detail-card {
+      position: absolute;
+      top: 134px;
+      right: 26px;
+      z-index: 12;
+      width: 386px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .detail-photo {
+      position: relative;
+      height: 198px;
+      background:
+        linear-gradient(180deg, rgba(3, 28, 34, .04), rgba(3, 28, 34, .22)),
+        var(--photo);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .detail-photo .badge-open {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+    }
+
+    .detail-fav {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 45px;
+      height: 45px;
+      border: 0;
+      border-radius: 50%;
+      color: #df4f5b;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: var(--shadow-soft);
+      font-size: 22px;
+    }
+
+    .photo-next {
+      position: absolute;
+      right: 18px;
+      bottom: 16px;
+      color: var(--white);
+      font-size: 30px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .45);
+    }
+
+    .detail-body {
+      padding: 20px 21px 21px;
+    }
+
+    .detail-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 7px;
+    }
+
+    .detail-title {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .detail-address {
+      margin: 0 0 14px;
+      color: #52666a;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 13px;
+      margin-top: 18px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 102px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .detail-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #112f36;
+      font-weight: 700;
+    }
+
+    .detail-value {
+      color: #394f54;
+    }
+
+    .detail-value a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .detail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.12fr;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .primary-btn,
+    .outline-btn {
+      height: 44px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .outline-btn {
+      border: 1px solid #12353d;
+      color: #12353d;
+      background: var(--white);
+    }
+
+    .primary-btn {
+      border: 1px solid var(--green);
+      color: var(--white);
+      background: var(--green);
+      box-shadow: 0 8px 16px rgba(15, 127, 112, .22);
+    }
+
+    .spot-bar {
+      position: absolute;
+      left: 28px;
+      bottom: 28px;
+      z-index: 11;
+      width: min(666px, calc(100% - 520px));
+      min-height: 142px;
+      padding: 18px 22px 21px;
+      border-radius: 13px;
+      color: var(--white);
+      background: rgba(8, 48, 59, .95);
+      box-shadow: var(--shadow);
+    }
+
+    .spot-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, .86);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .spot-more {
+      color: rgba(255, 255, 255, .82);
+      text-decoration: none;
+    }
+
+    .spots {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+    }
+
+    .spot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .spot-icon {
+      width: 43px;
+      height: 43px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--white);
+      background: var(--green-2);
+      font-size: 22px;
+    }
+
+    .spot:nth-child(2) .spot-icon { background: #d99836; }
+    .spot:nth-child(3) .spot-icon { background: #187e96; }
+    .spot:nth-child(4) .spot-icon { background: #ce594b; }
+    .spot:nth-child(5) .spot-icon { background: #8757b7; }
+
+    .spot-name {
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .spot-time {
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .84);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .map-tabs {
+      display: none;
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 60;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(8, 37, 45, .93);
+      box-shadow: var(--shadow);
+    }
+
+    .map-tabs button {
+      flex: 1;
+      height: 42px;
+      border: 0;
+      border-radius: 999px;
+      color: rgba(255, 255, 255, .78);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .map-tabs button.active {
+      color: var(--ink);
+      background: var(--white);
+    }
+
+    .fish-marker {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #fff;
+      border-radius: 50% 50% 50% 8px;
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 7px 16px rgba(7, 37, 45, .28);
+      transform: rotate(-45deg);
+      font-weight: 800;
+    }
+
+    .fish-marker.orange {
+      background: var(--orange);
+    }
+
+    .fish-marker span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      transform: rotate(45deg);
+      font-size: 14px;
+    }
+
+    .fish-marker svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 10px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .leaflet-popup-content {
+      margin: 10px 12px;
+      font-weight: 600;
+    }
+
+    .empty {
+      padding: 32px 12px;
+      color: #6b7e82;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1280px) {
+      .brand {
+        min-width: 340px;
+      }
+
+      .brand-title {
+        font-size: 24px;
+      }
+
+      .nav {
+        gap: 14px;
+      }
+
+      .nav a {
+        font-size: 13px;
+      }
+
+      .main {
+        grid-template-columns: 460px 1fr;
+      }
+
+      .facility-card {
+        grid-template-columns: 112px 1fr 40px;
+      }
+
+      .detail-card {
+        width: 350px;
+      }
+
+      .spot-bar {
+        width: min(620px, calc(100% - 430px));
+      }
+    }
+
+    @media (max-width: 980px) {
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        height: auto;
+        min-height: 100vh;
+        grid-template-rows: auto 1fr;
+      }
+
+      .header {
+        min-height: 82px;
+        padding: 14px 16px;
+      }
+
+      .brand {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .brand-title {
+        font-size: 20px;
+      }
+
+      .brand-copy,
+      .nav {
+        display: none;
+      }
+
+      .weather {
+        height: 50px;
+        padding: 8px 10px;
+      }
+
+      .place {
+        display: none;
+      }
+
+      .menu {
+        width: 50px;
+        height: 50px;
+      }
+
+      .main {
+        display: block;
+        min-height: calc(100vh - 82px);
+      }
+
+      .sidebar {
+        display: none;
+        height: calc(100vh - 82px);
+        padding-bottom: 78px;
+      }
+
+      .map-wrap {
+        height: calc(100vh - 82px);
+      }
+
+      body.show-list .sidebar {
+        display: block;
+      }
+
+      body.show-list .map-wrap {
+        display: none;
+      }
+
+      .type-filters {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .detail-card {
+        top: auto;
+        left: 14px;
+        right: 14px;
+        bottom: 82px;
+        width: auto;
+        max-height: 52vh;
+        overflow-y: auto;
+      }
+
+      .detail-photo {
+        height: 132px;
+      }
+
+      .detail-body {
+        padding: 15px;
+      }
+
+      .detail-title {
+        font-size: 21px;
+      }
+
+      .layer-panel {
+        top: 16px;
+        left: 14px;
+        width: 116px;
+      }
+
+      .map-search {
+        display: none;
+      }
+
+      .view-toggle {
+        top: 16px;
+        right: 66px;
+      }
+
+      .expand {
+        top: 16px;
+        right: 14px;
+      }
+
+      .spot-bar {
+        display: none;
+      }
+
+      .map-tabs {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .header-tools {
+        gap: 8px;
+      }
+
+      .weather {
+        display: none;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+      }
+
+      .facility-card {
+        grid-template-columns: 100px 1fr;
+      }
+
+      .facility-card .favorite {
+        position: absolute;
+        right: 18px;
+        bottom: 18px;
+      }
+
+      .facility-card {
+        position: relative;
+        padding-bottom: 52px;
+      }
+
+      .meta {
+        gap: 8px;
+      }
+
+      .detail-row {
+        grid-template-columns: 88px 1fr;
+      }
+
+      .detail-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .view-toggle button {
+        min-width: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M10 37c11-18 27-24 45-18-4 5-8 9-13 12 4 1 8 4 11 8-13 8-27 6-39 0l-7 8 3-10Z" fill="currentColor"/>
+            <circle cx="47" cy="21" r="2.2" fill="#08252d"/>
+            <path d="M18 39c-1 7 2 12 8 15" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AREA TROUT MAP</h1>
+          <p class="brand-copy">関東の管理釣り場を、釣れる条件で探す。</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="グローバルナビ">
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>ホーム</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20.8 4.6c-1.9-1.7-4.8-1.4-6.5.6L12 7.8 9.7 5.2C8 3.2 5.1 2.9 3.2 4.6c-2 1.8-2.1 4.9-.3 6.8L12 21l9.1-9.6c1.8-1.9 1.7-5-.3-6.8Z"/></svg>お気に入り</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 21h12a2 2 0 0 0 2-2V8l-6-5H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2Z"/><path d="M14 3v5h5"/><path d="M8 16h8"/><path d="M8 12h4"/></svg>釣果投稿</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>特集・コラム</a>
+        <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.4 1.7c-.9.8-1.9 1.3-1.9 2.8"/><path d="M12 17h.01"/></svg>使い方</a>
+      </nav>
+
+      <div class="header-tools">
+        <div class="weather" aria-label="天気">
+          <div class="weather-icon">⛅</div>
+          <div>
+            <div class="temp">23℃</div>
+            <div class="place">千葉県 成田市</div>
+          </div>
+        </div>
+        <button class="menu" aria-label="メニュー">≡</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <div class="search-box">
+          <input id="searchInput" type="search" placeholder="管理釣り場名・地域で検索" autocomplete="off" />
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </div>
+
+        <section class="filter-card">
+          <div class="filter-head">
+            <span>クイックフィルター</span>
+            <button class="reset" id="resetFilters">リセット</button>
+          </div>
+          <div class="quick-filters">
+            <button class="chip filter-btn" data-filter="open">営業中のみ</button>
+            <button class="chip filter-btn" data-filter="beginner">初心者向け</button>
+            <button class="chip filter-btn" data-filter="night">ナイターあり</button>
+            <button class="chip filter-btn" data-filter="women">女性に人気</button>
+          </div>
+        </section>
+
+        <div class="type-filters">
+          <button class="type-btn active type-filter" data-type="all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg>
+            すべて
+          </button>
+          <button class="type-btn type-filter" data-type="lure">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M19 4c-5 2-8 5-9 10"/><path d="M8 15c3 0 5 2 5 5"/><path d="M6 18c3-3 8-7 13-9"/><circle cx="6" cy="18" r="1.6"/></svg>
+            ルアーOK
+          </button>
+          <button class="type-btn type-filter" data-type="fly">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12 4 5"/><path d="m12 12 8-7"/><path d="m12 12-7 8"/><path d="m12 12 7 8"/><circle cx="12" cy="12" r="2"/></svg>
+            フライOK
+          </button>
+          <button class="type-btn type-filter" data-type="catchRelease">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 0 1-14.8 6.9"/><path d="M3 12A9 9 0 0 1 17.8 5.1"/><path d="M7 19H3v-4"/><path d="M17 5h4v4"/></svg>
+            C&amp;R
+          </button>
+          <button class="type-btn type-filter" data-type="night">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"/></svg>
+            ナイターあり
+          </button>
+          <button class="type-btn type-filter" data-type="kids">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/><path d="M3 21v-2a5 5 0 0 1 10 0v2"/><path d="M14 21v-1.5a4 4 0 0 1 7 0V21"/></svg>
+            キッズOK
+          </button>
+        </div>
+
+        <div class="result-row">
+          <div class="result-count"><strong id="resultCount">43</strong>件の管理釣り場が見つかりました</div>
+          <select class="sort" aria-label="並び替え">
+            <option>おすすめ順</option>
+            <option>評価順</option>
+            <option>近い順</option>
+          </select>
+        </div>
+
+        <div class="cards" id="facilityList"></div>
+      </aside>
+
+      <section class="map-wrap">
+        <div id="map" aria-label="管理釣り場マップ"></div>
+
+        <div class="layer-panel" aria-label="レイヤー切替">
+          <button class="active">⌾ 現在地</button>
+          <button>🚙 交通情報</button>
+          <button>🏪 コンビニ</button>
+          <button>🍴 食事処</button>
+          <button>🎣 釣具店</button>
+          <button>♨ 温泉・入浴</button>
+          <button>Ⓟ 駐車場</button>
+        </div>
+
+        <button class="map-search" type="button">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          このエリアを検索
+        </button>
+
+        <div class="view-toggle">
+          <button class="active">地図</button>
+          <button>写真</button>
+        </div>
+
+        <button class="expand" aria-label="拡大">↗</button>
+
+        <article class="detail-card" id="detailCard"></article>
+
+        <section class="spot-bar">
+          <div class="spot-head">
+            <span>周辺スポット（車での目安）</span>
+            <a class="spot-more" href="#">もっと見る 〉</a>
+          </div>
+          <div class="spots">
+            <div class="spot"><div class="spot-icon">🏪</div><div><div class="spot-name">コンビニ</div><div class="spot-time">4分〜</div></div></div>
+            <div class="spot"><div class="spot-icon">🍴</div><div><div class="spot-name">食事処</div><div class="spot-time">5分〜</div></div></div>
+            <div class="spot"><div class="spot-icon">🎣</div><div><div class="spot-name">釣具店</div><div class="spot-time">6分〜</div></div></div>
+            <div class="spot"><div class="spot-icon">⛽</div><div><div class="spot-name">ガソリン</div><div class="spot-time">4分〜</div></div></div>
+            <div class="spot"><div class="spot-icon">♨</div><div><div class="spot-name">温泉・入浴</div><div class="spot-time">12分〜</div></div></div>
+          </div>
+        </section>
+
+        <div class="zoom-control" aria-label="ズーム操作">
+          <button id="zoomIn">+</button>
+          <button id="zoomOut">−</button>
+        </div>
+        <div class="scale">20 km</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="map-tabs">
+    <button id="tabMap" class="active">地図</button>
+    <button id="tabList">一覧</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const facilityPhotos = [
+      "url('assets/trout-pond-detail.png')",
+      "url('assets/trout-pond-detail.png')",
+      "url('assets/trout-pond-detail.png')",
+      "url('assets/trout-pond-detail.png')"
+    ];
+
+    const facilities = [
+      {
+        id: 1,
+        name: "ジョイバレー",
+        prefecture: "千葉県",
+        city: "山武郡芝山町",
+        address: "千葉県山武郡芝山町大里486-1",
+        lat: 35.7177,
+        lng: 140.4019,
+        rating: 4.6,
+        reviews: 128,
+        open: true,
+        tags: ["ルアーOK", "C&R", "ナイターあり", "キッズOK"],
+        type: ["lure", "catchRelease", "night", "kids", "beginner", "women"],
+        wind: "北西 3.2m",
+        temp: "23℃",
+        stocking: "土日",
+        convenience: "車4分",
+        hours: "7:00〜17:00（季節変動あり）",
+        price: "5,000円〜",
+        access: "東関東道 成田ICから車で約15分",
+        parking: "あり（無料 / 約100台）",
+        website: "joyvalley.co.jp",
+        photo: facilityPhotos[0]
+      },
+      {
+        id: 2,
+        name: "朝霞ガーデン",
+        prefecture: "埼玉県",
+        city: "朝霞市",
+        address: "埼玉県朝霞市田島2-8-1",
+        lat: 35.8105,
+        lng: 139.6084,
+        rating: 4.7,
+        reviews: 96,
+        open: true,
+        tags: ["ルアーOK", "フライOK", "C&R", "ナイターあり"],
+        type: ["lure", "fly", "catchRelease", "night", "beginner"],
+        wind: "北北東 2.1m",
+        temp: "22℃",
+        stocking: "毎日",
+        convenience: "車5分",
+        hours: "6:30〜20:00",
+        price: "4,800円〜",
+        access: "外環道 和光北ICから車で約10分",
+        parking: "あり（約70台）",
+        website: "asaka-garden.jp",
+        photo: facilityPhotos[1]
+      },
+      {
+        id: 3,
+        name: "東山湖フィッシングエリア",
+        prefecture: "静岡県",
+        city: "御殿場市",
+        address: "静岡県御殿場市東山1077",
+        lat: 35.2838,
+        lng: 138.9487,
+        rating: 4.5,
+        reviews: 203,
+        open: true,
+        tags: ["ルアーOK", "フライOK", "C&R", "ナイターあり"],
+        type: ["lure", "fly", "catchRelease", "night", "women"],
+        wind: "北 2.7m",
+        temp: "19℃",
+        stocking: "土日",
+        convenience: "車6分",
+        hours: "5:00〜20:00",
+        price: "5,500円〜",
+        access: "東名 御殿場ICから車で約7分",
+        parking: "あり（大型駐車場）",
+        website: "higashiyamako.jp",
+        photo: facilityPhotos[2]
+      },
+      {
+        id: 4,
+        name: "すそのフィッシングパーク",
+        prefecture: "静岡県",
+        city: "裾野市",
+        address: "静岡県裾野市富沢589-1",
+        lat: 35.1822,
+        lng: 138.9094,
+        rating: 4.4,
+        reviews: 151,
+        open: true,
+        tags: ["ルアーOK", "フライOK", "C&R"],
+        type: ["lure", "fly", "catchRelease", "beginner", "kids"],
+        wind: "南西 1.8m",
+        temp: "20℃",
+        stocking: "水・土",
+        convenience: "車7分",
+        hours: "8:00〜18:00",
+        price: "4,700円〜",
+        access: "東名 裾野ICから車で約12分",
+        parking: "あり（無料）",
+        website: "susono-f-park.jp",
+        photo: facilityPhotos[3]
+      },
+      {
+        id: 5,
+        name: "リヴァスポット早戸",
+        prefecture: "神奈川県",
+        city: "相模原市",
+        address: "神奈川県相模原市緑区鳥屋3627",
+        lat: 35.5412,
+        lng: 139.2149,
+        rating: 4.3,
+        reviews: 82,
+        open: false,
+        tags: ["ルアーOK", "フライOK", "キッズOK"],
+        type: ["lure", "fly", "kids", "beginner"],
+        wind: "西 2.4m",
+        temp: "21℃",
+        stocking: "週末",
+        convenience: "車8分",
+        hours: "7:00〜17:00",
+        price: "4,500円〜",
+        access: "圏央道 相模原ICから車で約25分",
+        parking: "あり",
+        website: "riverspot.jp",
+        photo: facilityPhotos[0]
+      },
+      {
+        id: 6,
+        name: "フィッシングクラブ ジョイ",
+        prefecture: "栃木県",
+        city: "宇都宮市",
+        address: "栃木県宇都宮市郊外エリア",
+        lat: 36.5551,
+        lng: 139.8828,
+        rating: 4.2,
+        reviews: 64,
+        open: true,
+        tags: ["ルアーOK", "C&R", "キッズOK"],
+        type: ["lure", "catchRelease", "kids", "women"],
+        wind: "北 1.9m",
+        temp: "20℃",
+        stocking: "金・土",
+        convenience: "車5分",
+        hours: "7:00〜18:00",
+        price: "4,200円〜",
+        access: "東北道 宇都宮ICから車で約18分",
+        parking: "あり",
+        website: "fishingclub-joy.jp",
+        photo: facilityPhotos[1]
+      },
+      {
+        id: 7,
+        name: "那須白河フォレストスプリングス",
+        prefecture: "福島県",
+        city: "西白河郡",
+        address: "福島県西白河郡西郷村小田倉金子石16",
+        lat: 37.1269,
+        lng: 140.1557,
+        rating: 4.8,
+        reviews: 187,
+        open: true,
+        tags: ["ルアーOK", "フライOK", "C&R", "女性に人気"],
+        type: ["lure", "fly", "catchRelease", "women"],
+        wind: "北東 2.5m",
+        temp: "18℃",
+        stocking: "土日",
+        convenience: "車9分",
+        hours: "7:00〜17:00",
+        price: "5,200円〜",
+        access: "東北道 白河ICから車で約10分",
+        parking: "あり",
+        website: "forest-springs.jp",
+        photo: facilityPhotos[2]
+      },
+      {
+        id: 8,
+        name: "ウォルトンガーデン",
+        prefecture: "千葉県",
+        city: "成田市",
+        address: "千葉県成田市竜台1183",
+        lat: 35.8788,
+        lng: 140.3169,
+        rating: 4.1,
+        reviews: 73,
+        open: true,
+        tags: ["ルアーOK", "C&R", "ナイターあり"],
+        type: ["lure", "catchRelease", "night"],
+        wind: "東 1.6m",
+        temp: "23℃",
+        stocking: "火・土",
+        convenience: "車4分",
+        hours: "7:00〜21:00",
+        price: "4,600円〜",
+        access: "東関東道 成田ICから車で約20分",
+        parking: "あり",
+        website: "walton-garden.jp",
+        photo: facilityPhotos[3]
+      }
+    ];
+
+    let map;
+    let markers = [];
+    let selectedFacilityId = 1;
+    let activeQuickFilters = new Set();
+    let activeType = "all";
+    let currentFacilities = [...facilities];
+
+    function initMap() {
+      map = L.map("map", {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([35.6908, 139.7689], 8);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      }).addTo(map);
+
+      renderMarkers();
+    }
+
+    function renderMarkers() {
+      markers.forEach(marker => marker.remove());
+      markers = [];
+
+      currentFacilities.forEach((facility, index) => {
+        const isSelected = facility.id === selectedFacilityId;
+        const marker = L.marker([facility.lat, facility.lng], {
+          icon: L.divIcon({
+            className: "",
+            html: `
+              <div class="fish-marker ${isSelected ? "orange" : ""}">
+                <span>${isSelected ? fishSvg() : index + 1}</span>
+              </div>
+            `,
+            iconSize: [42, 42],
+            iconAnchor: [21, 42],
+            popupAnchor: [0, -38]
+          })
+        }).addTo(map);
+
+        marker.bindPopup(facility.name);
+        marker.on("click", () => selectFacility(facility.id));
+        markers.push(marker);
+      });
+    }
+
+    function selectFacility(id) {
+      const facility = facilities.find(item => item.id === id);
+      if (!facility) return;
+
+      selectedFacilityId = id;
+      map.setView([facility.lat, facility.lng], Math.max(map.getZoom(), 10), { animate: true });
+      renderMarkers();
+      renderFacilityList(currentFacilities);
+      renderDetailCard(facility);
+    }
+
+    function searchFacilities(keyword) {
+      const normalizedKeyword = keyword.trim().toLowerCase();
+      currentFacilities = facilities.filter(facility => {
+        const text = [
+          facility.name,
+          facility.prefecture,
+          facility.city,
+          facility.address,
+          ...facility.tags
+        ].join(" ").toLowerCase();
+
+        const matchesKeyword = !normalizedKeyword || text.includes(normalizedKeyword);
+        const matchesQuick = [...activeQuickFilters].every(filter => {
+          if (filter === "open") return facility.open;
+          return facility.type.includes(filter);
+        });
+        const matchesType = activeType === "all" || facility.type.includes(activeType);
+        return matchesKeyword && matchesQuick && matchesType;
+      });
+
+      if (!currentFacilities.some(facility => facility.id === selectedFacilityId) && currentFacilities.length) {
+        selectedFacilityId = currentFacilities[0].id;
+        renderDetailCard(currentFacilities[0]);
+      }
+
+      renderFacilityList(currentFacilities);
+      renderMarkers();
+      document.getElementById("resultCount").textContent = currentFacilities.length ? currentFacilities.length : 0;
+    }
+
+    async function fetchNearbyPlaces(lat, lng, category) {
+      // ここでGeoapify Places APIを呼び出す
+      // 例: https://api.geoapify.com/v2/places?categories=${category}&filter=circle:${lng},${lat},5000&apiKey=YOUR_API_KEY
+      return Promise.resolve([
+        { name: "セブンイレブン", category, minutes: 4, lat: lat + 0.01, lng: lng + 0.01 },
+        { name: "湖畔食堂", category, minutes: 5, lat: lat - 0.01, lng: lng + 0.012 }
+      ]);
+    }
+
+    async function fetchRoute(fromLat, fromLng, toLat, toLng) {
+      // ここでGeoapify Routing APIを呼び出す
+      // 例: https://api.geoapify.com/v1/routing?waypoints=${fromLat},${fromLng}|${toLat},${toLng}&mode=drive&apiKey=YOUR_API_KEY
+      return Promise.resolve({
+        distanceKm: 18.4,
+        durationMin: 27,
+        from: [fromLat, fromLng],
+        to: [toLat, toLng]
+      });
+    }
+
+    async function geocodeAddress(address) {
+      // ここでGeoapify Geocoding APIを呼び出す
+      // 例: https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=YOUR_API_KEY
+      const found = facilities.find(facility => facility.address === address);
+      return Promise.resolve(found ? { lat: found.lat, lng: found.lng } : null);
+    }
+
+    function renderFacilityList(list) {
+      const container = document.getElementById("facilityList");
+      if (!list.length) {
+        container.innerHTML = '<div class="empty">条件に合う管理釣り場が見つかりませんでした</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(facility => `
+        <article class="facility-card ${facility.id === selectedFacilityId ? "selected" : ""}" onclick="selectFacility(${facility.id})">
+          <div class="thumb" style="--photo: ${facility.photo}">
+            ${facility.open ? '<span class="badge-open">営業中</span>' : '<span class="badge-open" style="background:#7c8b8e">営業時間外</span>'}
+            <span class="thumb-fish">${fishSvg()}</span>
+          </div>
+          <div class="facility-main">
+            <div class="facility-top">
+              <div>
+                <h2 class="facility-title">${facility.name}</h2>
+                <p class="area">${facility.prefecture}${facility.city}</p>
+              </div>
+              <div class="rating"><span class="star">★</span>${facility.rating}</div>
+            </div>
+            <div class="tags">${renderTags(facility.tags)}</div>
+            <div class="meta">
+              <span>≋ 風: ${facility.wind}</span>
+              <span>♨ 気温: ${facility.temp}</span>
+              <span>▣ 放流: ${facility.stocking}</span>
+              <span>▱ コンビニ: ${facility.convenience}</span>
+            </div>
+          </div>
+          <button class="favorite ${facility.id === selectedFacilityId ? "active" : ""}" onclick="event.stopPropagation(); this.classList.toggle('active')" aria-label="お気に入り">♡</button>
+        </article>
+      `).join("");
+    }
+
+    function renderDetailCard(facility) {
+      const detail = document.getElementById("detailCard");
+      detail.innerHTML = `
+        <div class="detail-photo" style="--photo: ${facility.photo}">
+          ${facility.open ? '<span class="badge-open">営業中</span>' : '<span class="badge-open" style="background:#7c8b8e">営業時間外</span>'}
+          <button class="detail-fav" aria-label="お気に入り">♥</button>
+          <span class="photo-next">›</span>
+        </div>
+        <div class="detail-body">
+          <div class="detail-head">
+            <h2 class="detail-title">${facility.name}</h2>
+            <div class="rating"><span class="star">★</span>${facility.rating}<span style="color:#718286;font-size:12px;">(${facility.reviews}件)</span></div>
+          </div>
+          <p class="detail-address">${facility.address}</p>
+          <div class="tags">${renderTags(facility.tags)}</div>
+          <div class="detail-list">
+            <div class="detail-row"><div class="detail-label">◷ 営業時間</div><div class="detail-value">${facility.hours}</div></div>
+            <div class="detail-row"><div class="detail-label">▣ 料金</div><div class="detail-value">${facility.price}</div></div>
+            <div class="detail-row"><div class="detail-label">⌁ 放流</div><div class="detail-value">${facility.stocking}（詳細は公式HP）</div></div>
+            <div class="detail-row"><div class="detail-label">⌖ アクセス</div><div class="detail-value">${facility.access}</div></div>
+            <div class="detail-row"><div class="detail-label">Ⓟ 駐車場</div><div class="detail-value">${facility.parking}</div></div>
+            <div class="detail-row"><div class="detail-label">♢ 公式サイト</div><div class="detail-value"><a href="#" onclick="return false;">${facility.website} ↗</a></div></div>
+          </div>
+          <div class="detail-actions">
+            <button class="outline-btn">詳細を見る</button>
+            <button class="primary-btn" onclick="fetchRoute(35.6812, 139.7671, ${facility.lat}, ${facility.lng})">⌁ ルート検索</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTags(tags) {
+      return tags.map(tag => {
+        const className = tag.includes("ナイター") ? "tag blue" : tag.includes("キッズ") || tag.includes("女性") ? "tag pink" : "tag";
+        const icon = tag.includes("ルアー") ? "🎣" : tag.includes("フライ") ? "🪶" : tag.includes("C&R") ? "↻" : tag.includes("ナイター") ? "☾" : tag.includes("キッズ") ? "♟" : "◆";
+        return `<span class="${className}">${icon} ${tag}</span>`;
+      }).join("");
+    }
+
+    function fishSvg() {
+      return `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 12c4.7-5.2 10.3-6.3 16.7-3.5L22 6.7v10.6l-2.3-1.8C13.3 18.3 7.7 17.2 3 12Zm13-1.4a1.3 1.3 0 1 0 0-2.6 1.3 1.3 0 0 0 0 2.6Z"/></svg>`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      renderFacilityList(facilities);
+      renderDetailCard(facilities[0]);
+
+      document.getElementById("searchInput").addEventListener("input", event => {
+        searchFacilities(event.target.value);
+      });
+
+      document.querySelectorAll(".filter-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          const filter = button.dataset.filter;
+          button.classList.toggle("active");
+          if (activeQuickFilters.has(filter)) {
+            activeQuickFilters.delete(filter);
+          } else {
+            activeQuickFilters.add(filter);
+          }
+          searchFacilities(document.getElementById("searchInput").value);
+        });
+      });
+
+      document.querySelectorAll(".type-filter").forEach(button => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".type-filter").forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+          activeType = button.dataset.type;
+          searchFacilities(document.getElementById("searchInput").value);
+        });
+      });
+
+      document.getElementById("resetFilters").addEventListener("click", () => {
+        activeQuickFilters.clear();
+        activeType = "all";
+        document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
+        document.querySelectorAll(".type-filter").forEach(item => item.classList.toggle("active", item.dataset.type === "all"));
+        document.getElementById("searchInput").value = "";
+        searchFacilities("");
+      });
+
+      document.getElementById("zoomIn").addEventListener("click", () => map.zoomIn());
+      document.getElementById("zoomOut").addEventListener("click", () => map.zoomOut());
+
+      document.querySelectorAll(".layer-panel button, .view-toggle button").forEach(button => {
+        button.addEventListener("click", () => {
+          const group = button.parentElement.querySelectorAll("button");
+          group.forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+        });
+      });
+
+      document.getElementById("tabMap").addEventListener("click", () => {
+        document.body.classList.remove("show-list");
+        document.getElementById("tabMap").classList.add("active");
+        document.getElementById("tabList").classList.remove("active");
+        setTimeout(() => map.invalidateSize(), 180);
+      });
+
+      document.getElementById("tabList").addEventListener("click", () => {
+        document.body.classList.add("show-list");
+        document.getElementById("tabList").classList.add("active");
+        document.getElementById("tabMap").classList.remove("active");
+      });
+    });
+  </script>
+</body>
+</html>
