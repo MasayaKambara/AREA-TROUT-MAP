@@ -365,16 +365,19 @@
     }
 
     .facility-card {
+      position: relative;
       display: grid;
-      grid-template-columns: 132px 1fr 44px;
+      grid-template-columns: 132px 1fr;
       gap: 14px;
       min-height: 134px;
+      height: 134px;
       padding: 12px;
       border: 1px solid #dfe7e5;
       border-radius: 9px;
       background: var(--white);
       box-shadow: var(--shadow-soft);
       transition: .18s ease;
+      overflow: hidden;
     }
 
     .facility-card:hover,
@@ -429,6 +432,7 @@
 
     .facility-main {
       min-width: 0;
+      padding-right: 42px;
     }
 
     .facility-top {
@@ -438,13 +442,20 @@
       gap: 8px;
     }
 
+    .facility-top > div:first-child {
+      min-width: 0;
+    }
+
     .facility-title {
       margin: 2px 0 4px;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       font-size: 19px;
       font-weight: 800;
+      line-height: 1.25;
     }
 
     .area {
@@ -520,7 +531,9 @@
     }
 
     .favorite {
-      align-self: center;
+      position: absolute;
+      top: 12px;
+      right: 12px;
       width: 38px;
       height: 38px;
       border: 1px solid var(--line);
@@ -533,6 +546,23 @@
 
     .favorite.active {
       color: #e45c5c;
+    }
+
+    .card-detail-link {
+      position: absolute;
+      right: 14px;
+      bottom: 24px;
+      color: rgba(15, 127, 112, .86);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+
+    .card-detail-link:hover {
+      color: var(--green);
+      text-decoration: underline;
     }
 
     .map-wrap {
@@ -710,6 +740,9 @@
       right: 26px;
       z-index: 12;
       width: 386px;
+      max-height: calc(100vh - 386px);
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
       border-radius: 12px;
       background: var(--white);
@@ -718,6 +751,7 @@
 
     .detail-photo {
       position: relative;
+      flex: 0 0 auto;
       height: 198px;
       background:
         linear-gradient(180deg, rgba(3, 28, 34, .04), rgba(3, 28, 34, .22)),
@@ -757,6 +791,7 @@
 
     .detail-body {
       padding: 20px 21px 21px;
+      overflow-y: auto;
     }
 
     .detail-head {
@@ -841,42 +876,61 @@
 
     .spot-bar {
       position: absolute;
-      left: 28px;
+      left: 50%;
       bottom: 28px;
       z-index: 11;
-      width: min(666px, calc(100% - 520px));
+      width: clamp(700px, 72%, 760px);
+      max-width: calc(100% - 160px);
       min-height: 142px;
       padding: 18px 22px 21px;
       border-radius: 13px;
       color: var(--white);
       background: rgba(8, 48, 59, .95);
       box-shadow: var(--shadow);
+      transform: translateX(-50%);
     }
 
     .spot-head {
       display: flex;
       justify-content: space-between;
+      align-items: baseline;
+      gap: 18px;
       margin-bottom: 20px;
-      color: rgba(255, 255, 255, .86);
       font-size: 13px;
       font-weight: 600;
+    }
+
+    .spot-title {
+      color: #FFFFFF;
+    }
+
+    .spot-note {
+      color: rgba(255, 255, 255, .82);
+      font-size: .86em;
     }
 
     .spot-more {
       color: rgba(255, 255, 255, .82);
       text-decoration: none;
+      font-size: 11px;
+      white-space: nowrap;
     }
 
     .spots {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
+      gap: 18px;
     }
 
     .spot {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
+      min-width: 0;
+    }
+
+    .spot-label {
       min-width: 0;
     }
 
@@ -901,6 +955,8 @@
       font-weight: 700;
       font-size: 14px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .spot-time {
@@ -908,6 +964,32 @@
       color: rgba(255, 255, 255, .84);
       font-size: 13px;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spots.is-real {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .spots.is-real .spot {
+      justify-content: flex-start;
+    }
+
+    .spots.is-real .spot-icon {
+      width: 38px;
+      height: 38px;
+      font-size: 19px;
+    }
+
+    .spots.is-real .spot-name {
+      font-size: 13px;
+    }
+
+    .spots.is-real .spot-time {
+      font-size: 11px;
     }
 
     .map-tabs {
@@ -971,6 +1053,19 @@
       height: 18px;
     }
 
+    .nearby-layer-marker {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      color: #fff;
+      background: #153943;
+      box-shadow: 0 6px 14px rgba(7, 37, 45, .26);
+      font-size: 16px;
+    }
+
     .leaflet-popup-content-wrapper {
       border-radius: 10px;
       box-shadow: var(--shadow-soft);
@@ -1010,7 +1105,7 @@
       }
 
       .facility-card {
-        grid-template-columns: 112px 1fr 40px;
+        grid-template-columns: 112px 1fr;
       }
 
       .detail-card {
@@ -1018,7 +1113,8 @@
       }
 
       .spot-bar {
-        width: min(620px, calc(100% - 430px));
+        width: clamp(620px, 72%, 700px);
+        max-width: calc(100% - 150px);
       }
     }
 
@@ -1163,13 +1259,13 @@
       }
 
       .facility-card .favorite {
-        position: absolute;
-        right: 18px;
-        bottom: 18px;
+        right: 14px;
+        top: 14px;
       }
 
       .facility-card {
         position: relative;
+        height: auto;
         padding-bottom: 52px;
       }
 
@@ -1291,13 +1387,13 @@
         <div id="map" aria-label="管理釣り場マップ"></div>
 
         <div class="layer-panel" aria-label="レイヤー切替">
-          <button class="active">⌾ 現在地</button>
-          <button>🚙 交通情報</button>
-          <button>🏪 コンビニ</button>
-          <button>🍴 食事処</button>
-          <button>🎣 釣具店</button>
-          <button>♨ 温泉・入浴</button>
-          <button>Ⓟ 駐車場</button>
+          <button class="active" data-layer="current-location">⌾ 現在地</button>
+          <button data-layer="traffic">🚙 交通情報</button>
+          <button data-layer="コンビニ">🏪 コンビニ</button>
+          <button data-layer="食事処">🍴 食事処</button>
+          <button data-layer="釣具店">🎣 釣具店</button>
+          <button data-layer="温泉・入浴">♨ 温泉・入浴</button>
+          <button data-layer="駐車場">Ⓟ 駐車場</button>
         </div>
 
         <button class="map-search" type="button">
@@ -1316,10 +1412,10 @@
 
         <section class="spot-bar">
           <div class="spot-head">
-            <span>周辺スポット（車での目安）</span>
+            <span><span class="spot-title">周辺スポット</span><span class="spot-note">（車での目安）</span></span>
             <a class="spot-more" href="#">もっと見る 〉</a>
           </div>
-          <div class="spots">
+          <div class="spots" id="nearbySpots">
             <div class="spot"><div class="spot-icon">🏪</div><div><div class="spot-name">コンビニ</div><div class="spot-time">4分〜</div></div></div>
             <div class="spot"><div class="spot-icon">🍴</div><div><div class="spot-name">食事処</div><div class="spot-time">5分〜</div></div></div>
             <div class="spot"><div class="spot-icon">🎣</div><div><div class="spot-name">釣具店</div><div class="spot-time">6分〜</div></div></div>
@@ -1351,10 +1447,18 @@
       "url('assets/trout-pond-detail.png')"
     ];
 
+    const defaultNearbySpots = [
+      { category: "コンビニ", label: "4分〜", icon: "🏪" },
+      { category: "食事処", label: "5分〜", icon: "🍴" },
+      { category: "釣具店", label: "6分〜", icon: "🎣" },
+      { category: "ガソリン", label: "4分〜", icon: "⛽" },
+      { category: "温泉・入浴", label: "12分〜", icon: "♨" }
+    ];
+
     const facilities = [
       {
         id: 1,
-        name: "ジョイバレー",
+        name: "フィッシングクラブ ジョイバレー",
         prefecture: "千葉県",
         city: "山武郡芝山町",
         address: "千葉県山武郡芝山町大里486-1",
@@ -1363,17 +1467,39 @@
         rating: 4.6,
         reviews: 128,
         open: true,
-        tags: ["ルアーOK", "C&R", "ナイターあり", "キッズOK"],
-        type: ["lure", "catchRelease", "night", "kids", "beginner", "women"],
+        category: "管理釣り場 / エリアトラウト",
+        fishingMethod: "ルアー・フライ",
+        tags: ["ルアーOK", "フライOK", "エリアトラウト", "駐車場あり"],
+        type: ["lure", "fly", "beginner"],
         wind: "北西 3.2m",
         temp: "23℃",
-        stocking: "土日",
-        convenience: "車4分",
-        hours: "7:00〜17:00（季節変動あり）",
-        price: "5,000円〜",
+        stocking: "公式サイト要確認",
+        convenience: "周辺",
+        hours: "公式サイト要確認",
+        price: "公式サイト要確認",
         access: "東関東道 成田ICから車で約15分",
-        parking: "あり（無料 / 約100台）",
-        website: "joyvalley.co.jp",
+        parking: "あり",
+        website: "www.joyvalley.co.jp",
+        officialUrl: "http://www.joyvalley.co.jp/",
+        phone: "0479-78-1881",
+        notes: "営業時間・料金は変動する可能性があるため公式サイト要確認",
+        nearbyLayerSpots: {
+          "コンビニ": [
+            { name: "周辺コンビニ", lat: 35.7232, lng: 140.3924, icon: "🏪", isMock: true }
+          ],
+          "食事処": [
+            { name: "空の駅 風和里しばやま", lat: 35.7397, lng: 140.4088, icon: "🍴" }
+          ],
+          "釣具店": [
+            { name: "周辺釣具店", lat: 35.6964, lng: 140.3728, icon: "🎣", isMock: true }
+          ],
+          "温泉・入浴": [
+            { name: "成田空港温泉 空の湯", lat: 35.7535, lng: 140.3902, icon: "♨" }
+          ],
+          "駐車場": [
+            { name: "ジョイバレー駐車場", lat: 35.7173, lng: 140.4024, icon: "Ⓟ" }
+          ]
+        },
         photo: facilityPhotos[0]
       },
       {
@@ -1548,10 +1674,12 @@
 
     let map;
     let markers = [];
+    let nearbyLayerMarkers = [];
     let selectedFacilityId = 1;
     let activeQuickFilters = new Set();
     let activeType = "all";
     let currentFacilities = [...facilities];
+    let activeLayerCategory = null;
 
     function initMap() {
       map = L.map("map", {
@@ -1564,7 +1692,9 @@
         attribution: "&copy; OpenStreetMap contributors"
       }).addTo(map);
 
+      map.on("zoomend", updateScaleLabel);
       renderMarkers();
+      updateScaleLabel();
     }
 
     function renderMarkers() {
@@ -1602,6 +1732,12 @@
       renderMarkers();
       renderFacilityList(currentFacilities);
       renderDetailCard(facility);
+      renderNearbySpots(facility);
+      if (facility.nearbyLayerSpots && activeLayerCategory) {
+        renderNearbyLayerSpots(activeLayerCategory);
+      } else {
+        clearNearbyLayerMarkers();
+      }
     }
 
     function searchFacilities(keyword) {
@@ -1627,6 +1763,12 @@
       if (!currentFacilities.some(facility => facility.id === selectedFacilityId) && currentFacilities.length) {
         selectedFacilityId = currentFacilities[0].id;
         renderDetailCard(currentFacilities[0]);
+        renderNearbySpots(currentFacilities[0]);
+        if (currentFacilities[0].nearbyLayerSpots && activeLayerCategory) {
+          renderNearbyLayerSpots(activeLayerCategory);
+        } else {
+          clearNearbyLayerMarkers();
+        }
       }
 
       renderFacilityList(currentFacilities);
@@ -1669,7 +1811,7 @@
       }
 
       container.innerHTML = list.map(facility => `
-        <article class="facility-card ${facility.id === selectedFacilityId ? "selected" : ""}" onclick="selectFacility(${facility.id})">
+        <article class="facility-card ${facility.id === selectedFacilityId ? "selected" : ""} ${facility.officialUrl ? "has-detail" : ""}" onclick="selectFacility(${facility.id})">
           <div class="thumb" style="--photo: ${facility.photo}">
             ${facility.open ? '<span class="badge-open">営業中</span>' : '<span class="badge-open" style="background:#7c8b8e">営業時間外</span>'}
             <span class="thumb-fish">${fishSvg()}</span>
@@ -1691,12 +1833,28 @@
             </div>
           </div>
           <button class="favorite ${facility.id === selectedFacilityId ? "active" : ""}" onclick="event.stopPropagation(); this.classList.toggle('active')" aria-label="お気に入り">♡</button>
+          ${facility.officialUrl ? `<a class="card-detail-link" href="${facility.officialUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">詳細 〉</a>` : ""}
         </article>
       `).join("");
     }
 
     function renderDetailCard(facility) {
       const detail = document.getElementById("detailCard");
+      const officialLink = facility.officialUrl
+        ? `<a href="${facility.officialUrl}" target="_blank" rel="noopener noreferrer">${facility.website} ↗</a>`
+        : `<a href="#" onclick="return false;">${facility.website} ↗</a>`;
+      const phoneRow = facility.phone
+        ? `<div class="detail-row"><div class="detail-label">☎ 電話番号</div><div class="detail-value">${facility.phone}</div></div>`
+        : "";
+      const categoryRow = facility.category
+        ? `<div class="detail-row"><div class="detail-label">◇ 種別</div><div class="detail-value">${facility.category}</div></div>`
+        : "";
+      const methodRow = facility.fishingMethod
+        ? `<div class="detail-row"><div class="detail-label">🎣 釣法</div><div class="detail-value">${facility.fishingMethod}</div></div>`
+        : "";
+      const notesRow = facility.notes
+        ? `<div class="detail-row"><div class="detail-label">ⓘ 備考</div><div class="detail-value">${facility.notes}</div></div>`
+        : "";
       detail.innerHTML = `
         <div class="detail-photo" style="--photo: ${facility.photo}">
           ${facility.open ? '<span class="badge-open">営業中</span>' : '<span class="badge-open" style="background:#7c8b8e">営業時間外</span>'}
@@ -1711,12 +1869,16 @@
           <p class="detail-address">${facility.address}</p>
           <div class="tags">${renderTags(facility.tags)}</div>
           <div class="detail-list">
+            ${categoryRow}
+            ${methodRow}
             <div class="detail-row"><div class="detail-label">◷ 営業時間</div><div class="detail-value">${facility.hours}</div></div>
             <div class="detail-row"><div class="detail-label">▣ 料金</div><div class="detail-value">${facility.price}</div></div>
             <div class="detail-row"><div class="detail-label">⌁ 放流</div><div class="detail-value">${facility.stocking}（詳細は公式HP）</div></div>
             <div class="detail-row"><div class="detail-label">⌖ アクセス</div><div class="detail-value">${facility.access}</div></div>
             <div class="detail-row"><div class="detail-label">Ⓟ 駐車場</div><div class="detail-value">${facility.parking}</div></div>
-            <div class="detail-row"><div class="detail-label">♢ 公式サイト</div><div class="detail-value"><a href="#" onclick="return false;">${facility.website} ↗</a></div></div>
+            ${phoneRow}
+            <div class="detail-row"><div class="detail-label">♢ 公式サイト</div><div class="detail-value">${officialLink}</div></div>
+            ${notesRow}
           </div>
           <div class="detail-actions">
             <button class="outline-btn">詳細を見る</button>
@@ -1724,6 +1886,75 @@
           </div>
         </div>
       `;
+    }
+
+    function renderNearbySpots(facility) {
+      const container = document.getElementById("nearbySpots");
+      const hasRealNearbySpots = Boolean(facility.nearbySpots?.length);
+      const spots = hasRealNearbySpots ? facility.nearbySpots : defaultNearbySpots;
+
+      container.classList.toggle("is-real", hasRealNearbySpots);
+      container.innerHTML = spots.map(spot => `
+        <div class="spot">
+          <div class="spot-icon">${spot.icon}</div>
+          <div class="spot-label">
+            <div class="spot-name" title="${spot.category}">${spot.category}</div>
+            <div class="spot-time" title="${spot.name || spot.label}">${spot.name || spot.label}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function clearNearbyLayerMarkers() {
+      nearbyLayerMarkers.forEach(marker => marker.remove());
+      nearbyLayerMarkers = [];
+    }
+
+    function renderNearbyLayerSpots(category) {
+      clearNearbyLayerMarkers();
+      const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
+      const layerSpots = selectedFacility?.nearbyLayerSpots?.[category] || [];
+      if (!layerSpots.length) return;
+
+      layerSpots.forEach(spot => {
+        const marker = L.marker([spot.lat, spot.lng], {
+          icon: L.divIcon({
+            className: "",
+            html: `<div class="nearby-layer-marker">${spot.icon}</div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+          })
+        }).addTo(map);
+
+        marker.bindPopup(`${spot.name}<br><small>${category}</small>`);
+        nearbyLayerMarkers.push(marker);
+      });
+    }
+
+    function moveToMockCurrentLocation() {
+      // 将来的にはここをGeolocation API + Geoapify Geocoding APIに置き換える
+      const mockCurrentLocation = {
+        lat: 35.7306,
+        lng: 139.7196,
+        zoom: 13
+      };
+      map.setView([mockCurrentLocation.lat, mockCurrentLocation.lng], mockCurrentLocation.zoom, { animate: true });
+    }
+
+    function getScaleLabel(zoom) {
+      if (zoom <= 8) return "50 km";
+      if (zoom <= 10) return "10 km";
+      if (zoom <= 12) return "5 km";
+      if (zoom <= 14) return "1 km";
+      if (zoom <= 16) return "200 m";
+      return "100 m";
+    }
+
+    function updateScaleLabel() {
+      const scale = document.querySelector(".scale");
+      if (!scale || !map) return;
+      scale.textContent = getScaleLabel(map.getZoom());
     }
 
     function renderTags(tags) {
@@ -1742,6 +1973,7 @@
       initMap();
       renderFacilityList(facilities);
       renderDetailCard(facilities[0]);
+      renderNearbySpots(facilities[0]);
 
       document.getElementById("searchInput").addEventListener("input", event => {
         searchFacilities(event.target.value);
@@ -1781,7 +2013,30 @@
       document.getElementById("zoomIn").addEventListener("click", () => map.zoomIn());
       document.getElementById("zoomOut").addEventListener("click", () => map.zoomOut());
 
-      document.querySelectorAll(".layer-panel button, .view-toggle button").forEach(button => {
+      document.querySelectorAll(".layer-panel button").forEach(button => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".layer-panel button").forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+
+          const layer = button.dataset.layer;
+          if (layer === "current-location") {
+            activeLayerCategory = null;
+            clearNearbyLayerMarkers();
+            moveToMockCurrentLocation();
+            return;
+          }
+
+          activeLayerCategory = layer;
+          const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
+          if (selectedFacility?.nearbyLayerSpots?.[layer]) {
+            renderNearbyLayerSpots(layer);
+          } else {
+            clearNearbyLayerMarkers();
+          }
+        });
+      });
+
+      document.querySelectorAll(".view-toggle button").forEach(button => {
         button.addEventListener("click", () => {
           const group = button.parentElement.querySelectorAll("button");
           group.forEach(item => item.classList.remove("active"));
