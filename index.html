@@ -780,6 +780,10 @@
       font-size: 22px;
     }
 
+    .detail-fav.active {
+      color: #e45c5c;
+    }
+
     .photo-next {
       position: absolute;
       right: 18px;
@@ -928,6 +932,22 @@
       justify-content: center;
       gap: 10px;
       min-width: 0;
+      border: 0;
+      color: inherit;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background .18s ease, transform .18s ease;
+    }
+
+    .spot:hover,
+    .spot.active {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .spot.active {
+      transform: translateY(-1px);
     }
 
     .spot-label {
@@ -1064,6 +1084,17 @@
       background: #153943;
       box-shadow: 0 6px 14px rgba(7, 37, 45, .26);
       font-size: 16px;
+    }
+
+    .traffic-label {
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(8, 37, 45, .9);
+      box-shadow: 0 6px 14px rgba(7, 37, 45, .24);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .leaflet-popup-content-wrapper {
@@ -1448,11 +1479,32 @@
     ];
 
     const defaultNearbySpots = [
-      { category: "コンビニ", label: "4分〜", icon: "🏪" },
-      { category: "食事処", label: "5分〜", icon: "🍴" },
-      { category: "釣具店", label: "6分〜", icon: "🎣" },
-      { category: "ガソリン", label: "4分〜", icon: "⛽" },
-      { category: "温泉・入浴", label: "12分〜", icon: "♨" }
+      { category: "コンビニ", label: "4分〜", icon: "🏪", layerCategory: "コンビニ" },
+      { category: "食事処", label: "5分〜", icon: "🍴", layerCategory: "食事処" },
+      { category: "釣具店", label: "6分〜", icon: "🎣", layerCategory: "釣具店" },
+      { category: "ガソリン", label: "4分〜", icon: "⛽", layerCategory: "ガソリン" },
+      { category: "温泉・入浴", label: "12分〜", icon: "♨", layerCategory: "温泉・入浴" }
+    ];
+
+    const trafficLayer = [
+      {
+        type: "heavy",
+        label: "渋滞",
+        color: "#d94b3d",
+        coordinates: [[35.7205, 140.3952], [35.7177, 140.4019], [35.7152, 140.4094]]
+      },
+      {
+        type: "slow",
+        label: "やや混雑",
+        color: "#df8a28",
+        coordinates: [[35.7288, 140.3895], [35.7242, 140.3976], [35.7198, 140.4042]]
+      },
+      {
+        type: "normal",
+        label: "順調",
+        color: "#159a85",
+        coordinates: [[35.7076, 140.3928], [35.7138, 140.3988], [35.7208, 140.4058]]
+      }
     ];
 
     const facilities = [
@@ -1495,6 +1547,9 @@
           ],
           "温泉・入浴": [
             { name: "成田空港温泉 空の湯", lat: 35.7535, lng: 140.3902, icon: "♨" }
+          ],
+          "ガソリン": [
+            { name: "周辺ガソリンスタンド", lat: 35.7284, lng: 140.3998, icon: "⛽", isMock: true }
           ],
           "駐車場": [
             { name: "ジョイバレー駐車場", lat: 35.7173, lng: 140.4024, icon: "Ⓟ" }
@@ -1675,11 +1730,14 @@
     let map;
     let markers = [];
     let nearbyLayerMarkers = [];
+    let trafficLayerItems = [];
     let selectedFacilityId = 1;
     let activeQuickFilters = new Set();
     let activeType = "all";
     let currentFacilities = [...facilities];
-    let activeLayerCategory = null;
+    let activeSpotLayerCategory = null;
+    let isTrafficLayerVisible = false;
+    const favorites = Object.fromEntries(facilities.map(facility => [facility.id, false]));
 
     function initMap() {
       map = L.map("map", {
@@ -1729,15 +1787,20 @@
 
       selectedFacilityId = id;
       map.setView([facility.lat, facility.lng], Math.max(map.getZoom(), 10), { animate: true });
+      if (!facility.nearbyLayerSpots && activeSpotLayerCategory) {
+        activeSpotLayerCategory = null;
+      }
       renderMarkers();
       renderFacilityList(currentFacilities);
       renderDetailCard(facility);
       renderNearbySpots(facility);
-      if (facility.nearbyLayerSpots && activeLayerCategory) {
-        renderNearbyLayerSpots(activeLayerCategory);
+      if (facility.nearbyLayerSpots && activeSpotLayerCategory) {
+        renderNearbyLayerSpots(activeSpotLayerCategory);
       } else {
+        activeSpotLayerCategory = null;
         clearNearbyLayerMarkers();
       }
+      updateLayerButtonStates();
     }
 
     function searchFacilities(keyword) {
@@ -1762,13 +1825,18 @@
 
       if (!currentFacilities.some(facility => facility.id === selectedFacilityId) && currentFacilities.length) {
         selectedFacilityId = currentFacilities[0].id;
+        if (!currentFacilities[0].nearbyLayerSpots && activeSpotLayerCategory) {
+          activeSpotLayerCategory = null;
+        }
         renderDetailCard(currentFacilities[0]);
         renderNearbySpots(currentFacilities[0]);
-        if (currentFacilities[0].nearbyLayerSpots && activeLayerCategory) {
-          renderNearbyLayerSpots(activeLayerCategory);
+        if (currentFacilities[0].nearbyLayerSpots && activeSpotLayerCategory) {
+          renderNearbyLayerSpots(activeSpotLayerCategory);
         } else {
+          activeSpotLayerCategory = null;
           clearNearbyLayerMarkers();
         }
+        updateLayerButtonStates();
       }
 
       renderFacilityList(currentFacilities);
@@ -1832,7 +1900,7 @@
               <span>▱ コンビニ: ${facility.convenience}</span>
             </div>
           </div>
-          <button class="favorite ${facility.id === selectedFacilityId ? "active" : ""}" onclick="event.stopPropagation(); this.classList.toggle('active')" aria-label="お気に入り">♡</button>
+          <button class="favorite ${favorites[facility.id] ? "active" : ""}" onclick="event.stopPropagation(); toggleFavorite(${facility.id})" aria-label="お気に入り">${favorites[facility.id] ? "♥" : "♡"}</button>
           ${facility.officialUrl ? `<a class="card-detail-link" href="${facility.officialUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">詳細 〉</a>` : ""}
         </article>
       `).join("");
@@ -1858,7 +1926,7 @@
       detail.innerHTML = `
         <div class="detail-photo" style="--photo: ${facility.photo}">
           ${facility.open ? '<span class="badge-open">営業中</span>' : '<span class="badge-open" style="background:#7c8b8e">営業時間外</span>'}
-          <button class="detail-fav" aria-label="お気に入り">♥</button>
+          <button class="detail-fav ${favorites[facility.id] ? "active" : ""}" onclick="toggleFavorite(${facility.id})" aria-label="お気に入り">${favorites[facility.id] ? "♥" : "♡"}</button>
           <span class="photo-next">›</span>
         </div>
         <div class="detail-body">
@@ -1888,6 +1956,13 @@
       `;
     }
 
+    function toggleFavorite(id) {
+      favorites[id] = !favorites[id];
+      renderFacilityList(currentFacilities);
+      const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
+      if (selectedFacility) renderDetailCard(selectedFacility);
+    }
+
     function renderNearbySpots(facility) {
       const container = document.getElementById("nearbySpots");
       const hasRealNearbySpots = Boolean(facility.nearbySpots?.length);
@@ -1895,13 +1970,13 @@
 
       container.classList.toggle("is-real", hasRealNearbySpots);
       container.innerHTML = spots.map(spot => `
-        <div class="spot">
+        <button class="spot ${activeSpotLayerCategory === spot.layerCategory ? "active" : ""}" type="button" data-nearby-layer="${spot.layerCategory}">
           <div class="spot-icon">${spot.icon}</div>
           <div class="spot-label">
             <div class="spot-name" title="${spot.category}">${spot.category}</div>
             <div class="spot-time" title="${spot.name || spot.label}">${spot.name || spot.label}</div>
           </div>
-        </div>
+        </button>
       `).join("");
     }
 
@@ -1929,6 +2004,72 @@
 
         marker.bindPopup(`${spot.name}<br><small>${category}</small>`);
         nearbyLayerMarkers.push(marker);
+      });
+    }
+
+    function toggleSpotLayer(category) {
+      const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
+      if (!selectedFacility?.nearbyLayerSpots?.[category]) return;
+
+      if (activeSpotLayerCategory === category) {
+        activeSpotLayerCategory = null;
+        clearNearbyLayerMarkers();
+      } else {
+        activeSpotLayerCategory = category;
+        renderNearbyLayerSpots(category);
+      }
+
+      renderNearbySpots(selectedFacility);
+      updateLayerButtonStates();
+    }
+
+    function clearTrafficLayer() {
+      trafficLayerItems.forEach(item => item.remove());
+      trafficLayerItems = [];
+    }
+
+    function renderTrafficLayer() {
+      clearTrafficLayer();
+      trafficLayer.forEach(segment => {
+        const line = L.polyline(segment.coordinates, {
+          color: segment.color,
+          weight: 7,
+          opacity: .86,
+          lineCap: "round"
+        }).addTo(map);
+
+        const centerIndex = Math.floor(segment.coordinates.length / 2);
+        const label = L.marker(segment.coordinates[centerIndex], {
+          icon: L.divIcon({
+            className: "",
+            html: `<div class="traffic-label">${segment.label}</div>`,
+            iconSize: [64, 24],
+            iconAnchor: [32, 12]
+          })
+        }).addTo(map);
+
+        trafficLayerItems.push(line, label);
+      });
+    }
+
+    function toggleTrafficLayer() {
+      isTrafficLayerVisible = !isTrafficLayerVisible;
+      if (isTrafficLayerVisible) {
+        renderTrafficLayer();
+      } else {
+        clearTrafficLayer();
+      }
+      updateLayerButtonStates();
+    }
+
+    function updateLayerButtonStates() {
+      document.querySelectorAll(".layer-panel button").forEach(button => {
+        const layer = button.dataset.layer;
+        const isActive =
+          layer === activeSpotLayerCategory ||
+          (layer === "traffic" && isTrafficLayerVisible) ||
+          (layer === "current-location" && !activeSpotLayerCategory && !isTrafficLayerVisible);
+        button.classList.toggle("active", isActive);
       });
     }
 
@@ -2013,26 +2154,27 @@
       document.getElementById("zoomIn").addEventListener("click", () => map.zoomIn());
       document.getElementById("zoomOut").addEventListener("click", () => map.zoomOut());
 
+      document.getElementById("nearbySpots").addEventListener("click", event => {
+        const spotButton = event.target.closest("[data-nearby-layer]");
+        if (!spotButton) return;
+        toggleSpotLayer(spotButton.dataset.nearbyLayer);
+      });
+
       document.querySelectorAll(".layer-panel button").forEach(button => {
         button.addEventListener("click", () => {
-          document.querySelectorAll(".layer-panel button").forEach(item => item.classList.remove("active"));
-          button.classList.add("active");
-
           const layer = button.dataset.layer;
           if (layer === "current-location") {
-            activeLayerCategory = null;
-            clearNearbyLayerMarkers();
             moveToMockCurrentLocation();
+            updateLayerButtonStates();
             return;
           }
 
-          activeLayerCategory = layer;
-          const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
-          if (selectedFacility?.nearbyLayerSpots?.[layer]) {
-            renderNearbyLayerSpots(layer);
-          } else {
-            clearNearbyLayerMarkers();
+          if (layer === "traffic") {
+            toggleTrafficLayer();
+            return;
           }
+
+          toggleSpotLayer(layer);
         });
       });
 
