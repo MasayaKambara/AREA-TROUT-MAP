@@ -68,6 +68,24 @@
       box-shadow: 0 10px 28px rgba(5, 20, 25, .25);
     }
 
+    .back-to-map {
+      display: none;
+      height: 42px;
+      padding: 0 14px;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 9px;
+      color: var(--white);
+      background: rgba(255, 255, 255, .05);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    body.detail-view .back-to-map {
+      display: inline-flex;
+    }
+
     .brand {
       min-width: 455px;
       display: flex;
@@ -196,11 +214,75 @@
       line-height: 1;
     }
 
+    .user-menu {
+      position: absolute;
+      top: 76px;
+      right: 26px;
+      z-index: 80;
+      width: 232px;
+      display: none;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: var(--shadow);
+    }
+
+    .user-menu.open {
+      display: grid;
+      gap: 6px;
+    }
+
+    .menu-item {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .menu-item:hover {
+      background: #f2f8f6;
+    }
+
+    .menu-item.register {
+      margin: 6px 0;
+      border: 1px solid #bfe5dd;
+      color: var(--green);
+      background: #ecfaf6;
+      box-shadow: 0 4px 12px rgba(15, 127, 112, .08);
+    }
+
     .main {
       min-height: 0;
       display: grid;
       grid-template-columns: 516px 1fr;
       position: relative;
+    }
+
+    body.detail-view {
+      overflow: auto;
+    }
+
+    body.register-view {
+      overflow: auto;
+      background: #f5f8f7;
+    }
+
+    body.detail-view .main,
+    body.detail-view .map-tabs,
+    body.register-view .header,
+    body.register-view .main,
+    body.register-view .map-tabs,
+    body.register-view .facility-detail-page {
+      display: none;
     }
 
     .sidebar {
@@ -584,7 +666,9 @@
       position: absolute;
       right: 14px;
       bottom: 24px;
+      border: 0;
       color: rgba(15, 127, 112, .86);
+      background: transparent;
       text-decoration: none;
       font-size: 11px;
       font-weight: 700;
@@ -1163,6 +1247,947 @@
       font-weight: 600;
     }
 
+    .facility-detail-page {
+      display: none;
+      height: calc(100vh - 92px);
+      overflow-y: auto;
+      background: #f5f8f7;
+      padding: 24px;
+    }
+
+    body.detail-view .facility-detail-page {
+      display: block;
+    }
+
+    .detail-shell {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .detail-hero {
+      display: grid;
+      grid-template-columns: minmax(420px, 1.12fr) minmax(340px, .88fr);
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .gallery-card,
+    .hero-summary,
+    .detail-info-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .gallery-card {
+      overflow: hidden;
+      background: #e5eeee;
+    }
+
+    .hero-photo {
+      position: relative;
+      height: 342px;
+      background:
+        linear-gradient(180deg, rgba(3, 28, 34, .02), rgba(3, 28, 34, .22)),
+        url('assets/trout-pond-detail.png');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-photo .badge-open {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+    }
+
+    .photo-count {
+      position: absolute;
+      left: 18px;
+      bottom: 16px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      color: var(--white);
+      background: rgba(8, 37, 45, .78);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      color: var(--green);
+      background: rgba(255, 255, 255, .94);
+      box-shadow: var(--shadow-soft);
+      transform: translateY(-50%);
+      font-size: 24px;
+    }
+
+    .gallery-nav.prev { left: 14px; }
+    .gallery-nav.next { right: 14px; }
+
+    .thumb-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      padding: 8px;
+      background: rgba(255, 255, 255, .86);
+    }
+
+    .gallery-thumb {
+      height: 58px;
+      border: 2px solid rgba(255, 255, 255, .75);
+      border-radius: 6px;
+      background: url('assets/trout-pond-detail.png');
+      background-size: cover;
+      background-position: center;
+      box-shadow: inset 0 0 0 1px rgba(8, 37, 45, .08);
+    }
+
+    .gallery-thumb:nth-child(2) { background-position: 30% 50%; }
+    .gallery-thumb:nth-child(3) { background-position: 62% 52%; }
+    .gallery-thumb:nth-child(4) { background-position: 78% 45%; }
+    .gallery-thumb:nth-child(5),
+    .gallery-thumb:nth-child(6) {
+      background:
+        radial-gradient(circle at 48% 44%, #58a86b 0 7%, transparent 8%),
+        radial-gradient(circle at 52% 55%, #277d9a 0 26%, #1f647d 27% 34%, transparent 35%),
+        linear-gradient(135deg, #8bb66b, #2b7d5f);
+    }
+
+    .hero-summary {
+      position: relative;
+      min-height: 300px;
+      padding: 34px 34px 28px;
+      box-shadow: none;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .hero-summary .detail-fav {
+      top: 8px;
+      right: 8px;
+    }
+
+    .hero-summary h2 {
+      margin: 30px 0 12px;
+      font-size: 30px;
+      line-height: 1.35;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .hero-rating {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+
+    .hero-rating .star {
+      font-size: 22px;
+    }
+
+    .hero-hours {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 22px;
+      color: #223c42;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hero-hours strong {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .detail-tabs {
+      display: flex;
+      gap: 18px;
+      margin: 0 0 20px;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .detail-tab {
+      min-width: 92px;
+      padding: 14px 10px 13px;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      color: #213a40;
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .detail-tab.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .detail-content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(330px, .95fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .detail-main-column,
+    .detail-side-column {
+      display: grid;
+      gap: 16px;
+    }
+
+    .detail-info-card {
+      padding: 18px;
+    }
+
+    .detail-info-card h3 {
+      margin: 0 0 14px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .intro-text {
+      margin: 0;
+      color: #253d43;
+      line-height: 1.85;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .condition-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    .condition-item,
+    .basic-row,
+    .side-row {
+      border: 1px solid #e5eeee;
+      border-radius: 8px;
+      background: #fbfdfd;
+    }
+
+    .condition-item {
+      padding: 12px;
+      min-height: 82px;
+    }
+
+    .condition-label {
+      color: #6d7f83;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .condition-value {
+      margin-top: 9px;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .activity-row {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .basic-list,
+    .side-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .basic-row,
+    .side-row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .basic-row strong,
+    .side-row strong {
+      color: #1b3339;
+    }
+
+    .nav-button {
+      width: 100%;
+      height: 38px;
+      margin-top: 10px;
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      color: var(--green);
+      background: var(--white);
+      font-weight: 800;
+    }
+
+    .pond-map {
+      position: relative;
+      height: 210px;
+      overflow: hidden;
+      border-radius: 8px;
+      background:
+        radial-gradient(ellipse at 50% 48%, #2c94a9 0 34%, #1f768f 35% 47%, transparent 48%),
+        radial-gradient(circle at 53% 48%, #6fa75d 0 8%, transparent 9%),
+        linear-gradient(135deg, #89b66a, #3c855f);
+    }
+
+    .pond-map::before {
+      content: "";
+      position: absolute;
+      inset: 24px 42px;
+      border: 5px solid rgba(255, 255, 255, .56);
+      border-radius: 50%;
+      transform: rotate(-12deg);
+    }
+
+    .pond-label {
+      position: absolute;
+      padding: 7px 10px;
+      border-radius: 7px;
+      color: #fff;
+      background: rgba(15, 127, 112, .9);
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .pond-label.inlet { left: 24px; top: 54px; }
+    .pond-label.pier { left: 118px; bottom: 48px; }
+    .pond-label.island { left: 47%; top: 45%; }
+    .pond-label.deep { right: 36px; top: 66px; background: rgba(30, 103, 138, .92); }
+
+    .catch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .catch-card {
+      overflow: hidden;
+      border: 1px solid #e5eeee;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(10, 35, 40, .06);
+    }
+
+    .catch-head {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .avatar {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green);
+      font-size: 11px;
+    }
+
+    .fish-photo {
+      height: 92px;
+      background:
+        linear-gradient(20deg, transparent 40%, rgba(255,255,255,.55) 41% 45%, transparent 46%),
+        radial-gradient(ellipse at 48% 50%, #ced5d4 0 18%, #6b7c7f 19% 26%, transparent 27%),
+        linear-gradient(135deg, #47565a, #afb9b8);
+      background-size: cover;
+    }
+
+    .catch-body {
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .catch-meta {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+
+    .mini-tag {
+      padding: 3px 6px;
+      border: 1px solid #cae7e0;
+      border-radius: 5px;
+      color: var(--green);
+      background: #f6fffc;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .catch-actions {
+      display: flex;
+      gap: 12px;
+      color: #536a70;
+      margin-top: 8px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf2f1;
+      font-weight: 700;
+    }
+
+    .rule-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: #30484e;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+
+    .review-score {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .score-number {
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .rating-bars {
+      display: grid;
+      gap: 7px;
+      font-size: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 34px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .bar-track {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8eeee;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .review {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #edf2f1;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .side-more {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--green);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .detail-spot-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .detail-spot {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .detail-spot .spot-icon {
+      margin: 0 auto 7px;
+    }
+
+    .register-page {
+      display: none;
+      min-height: 100vh;
+      padding: 30px 22px 42px;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(21, 154, 138, .10), transparent 28%),
+        linear-gradient(180deg, #f7fbfa, #eef5f3);
+    }
+
+    body.register-view .register-page {
+      display: block;
+    }
+
+    .register-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .register-back {
+      height: 38px;
+      margin-bottom: 18px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--green);
+      background: #fff;
+      font-weight: 800;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .register-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .register-head {
+      padding: 24px 28px 18px;
+      border-bottom: 1px solid #edf2f1;
+    }
+
+    .register-head h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .register-head p {
+      margin: 0;
+      color: #536a70;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      padding: 18px 28px;
+      border-bottom: 1px solid #edf2f1;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #7b8d91;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--green);
+      background: #eaf8f5;
+      border: 1px solid #cce7e0;
+      font-size: 12px;
+    }
+
+    .step.active {
+      color: var(--green);
+    }
+
+    .step.active .step-num {
+      color: #fff;
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .register-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(330px, .95fr);
+      gap: 18px;
+      padding: 18px 28px 24px;
+    }
+
+    .register-error-summary {
+      display: none;
+      margin: 16px 28px 0;
+      padding: 14px 16px;
+      border: 1px solid #f0b7ad;
+      border-radius: 9px;
+      color: #9d2f24;
+      background: #fff6f4;
+      box-shadow: 0 6px 18px rgba(157, 47, 36, .08);
+    }
+
+    .register-error-summary.show {
+      display: block;
+    }
+
+    .register-error-summary strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .register-error-summary ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.7;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .register-grid.single {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .register-grid.confirm {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, .38fr);
+      align-items: start;
+    }
+
+    .form-column,
+    .upload-column {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-section {
+      padding: 18px;
+      border: 1px solid #e2ece9;
+      border-radius: 9px;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(10, 35, 40, .05);
+    }
+
+    .form-section h3 {
+      margin: 0 0 16px;
+      color: var(--green);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .form-section h3 .muted {
+      color: #718286;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .form-subhead {
+      margin: 18px 0 10px;
+      color: #203840;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .form-subhead:first-child {
+      margin-top: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      color: #203840;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .required {
+      color: #d84d3c;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #dbe7e4;
+      border-radius: 7px;
+      padding: 9px 11px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .form-field.has-error input,
+    .form-field.has-error select,
+    .form-field.has-error textarea {
+      border-color: #e07a6a;
+      background: #fffaf9;
+      box-shadow: 0 0 0 3px rgba(224, 122, 106, .12);
+    }
+
+    .form-field textarea {
+      min-height: 118px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr 1.25fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .char-count {
+      justify-self: end;
+      color: #5e7276;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .check-pill {
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 9px;
+      border: 1px solid #dbe7e4;
+      border-radius: 7px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .check-pill input {
+      accent-color: var(--green);
+    }
+
+    .helper-input {
+      min-height: 34px;
+      border: 1px solid #dbe7e4;
+      border-radius: 7px;
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+
+    .upload-box {
+      min-height: 132px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border: 1px dashed #c7d8d5;
+      border-radius: 8px;
+      color: #536a70;
+      background: #fbfdfd;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .upload-box strong {
+      color: var(--ink);
+    }
+
+    .sub-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .mini-upload {
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #c7d8d5;
+      border-radius: 7px;
+      color: #8aa0a4;
+      background: #fbfdfd;
+      font-size: 22px;
+    }
+
+    .mini-upload span {
+      color: #536a70;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .confirm-intro {
+      padding: 18px;
+      border: 1px solid #cce7e0;
+      border-radius: 9px;
+      background: #f2fbf8;
+    }
+
+    .confirm-intro h3 {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .confirm-intro p {
+      margin: 0;
+      color: #536a70;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .confirm-card {
+      padding: 16px;
+      border: 1px solid #e2ece9;
+      border-radius: 9px;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(10, 35, 40, .05);
+    }
+
+    .confirm-card h3 {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .confirm-list {
+      display: grid;
+      gap: 8px;
+      color: #30484e;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .confirm-list strong {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .preview-photo {
+      min-height: 128px;
+      border-radius: 8px;
+      background-image: linear-gradient(180deg, rgba(0, 48, 53, .08), rgba(0, 48, 53, .22)), url('assets/trout-pond-detail.png');
+      background-position: center;
+      background-size: cover;
+    }
+
+    .preview-thumbs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview-thumb {
+      aspect-ratio: 4 / 3;
+      border-radius: 7px;
+      background-image: url('assets/trout-pond-detail.png');
+      background-position: center;
+      background-size: cover;
+      border: 1px solid #dbe7e4;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .tips-card {
+      padding: 16px;
+      border: 1px solid #cce7e0;
+      border-radius: 8px;
+      background: #ecfaf6;
+    }
+
+    .tips-card h3 {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .tips-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #30484e;
+      line-height: 1.8;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .register-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 28px 24px;
+    }
+
+    .draft-btn,
+    .next-btn {
+      height: 44px;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .draft-btn {
+      border: 1px solid var(--green);
+      color: var(--green);
+      background: #fff;
+    }
+
+    .next-btn {
+      border: 1px solid var(--green);
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 8px 16px rgba(15, 127, 112, .18);
+    }
+
     .empty {
       padding: 32px 12px;
       color: #6b7e82;
@@ -1380,6 +2405,69 @@
         grid-template-columns: 1fr;
       }
 
+      .facility-detail-page {
+        height: auto;
+        min-height: calc(100vh - 82px);
+        padding: 14px;
+      }
+
+      .detail-hero,
+      .detail-content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-photo {
+        height: 260px;
+      }
+
+      .hero-summary {
+        min-height: 0;
+        padding: 14px 0 4px;
+      }
+
+      .hero-summary h2 {
+        margin-top: 10px;
+        font-size: 24px;
+      }
+
+      .detail-tabs {
+        overflow-x: auto;
+      }
+
+      .condition-grid,
+      .catch-grid,
+      .detail-spot-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .register-page {
+        padding: 14px;
+      }
+
+      .steps,
+      .register-grid,
+      .register-actions {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .register-grid,
+      .form-grid,
+      .register-actions,
+      .confirm-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .inline-fields,
+      .check-grid,
+      .sub-upload-grid {
+        grid-template-columns: 1fr;
+      }
+
       .view-toggle button {
         min-width: 52px;
       }
@@ -1389,6 +2477,7 @@
 <body>
   <div class="app">
     <header class="header">
+      <button class="back-to-map" id="backToMap" type="button">‹ 戻る</button>
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none">
@@ -1419,7 +2508,17 @@
             <div class="place">千葉県 成田市</div>
           </div>
         </div>
-        <button class="menu" aria-label="メニュー">≡</button>
+        <button class="menu" id="menuButton" aria-label="メニュー" aria-expanded="false">≡</button>
+      </div>
+      <div class="user-menu" id="userMenu" aria-label="メニュー">
+        <button class="menu-item" type="button">⌂ ホーム</button>
+        <button class="menu-item" type="button">♡ お気に入り</button>
+        <button class="menu-item" type="button">▤ 釣果投稿</button>
+        <button class="menu-item" type="button">▣ 特集・コラム</button>
+        <button class="menu-item" type="button">? 使い方</button>
+        <button class="menu-item register" id="openRegister" type="button">＋ 釣り場を登録する</button>
+        <button class="menu-item" type="button">⚙ 設定</button>
+        <button class="menu-item" type="button">↪ ログアウト</button>
       </div>
     </header>
 
@@ -1532,6 +2631,9 @@
         <div class="scale">20 km</div>
       </section>
     </main>
+
+    <section class="facility-detail-page" id="facilityDetailPage"></section>
+    <section class="register-page" id="registerPage"></section>
   </div>
 
   <div class="map-tabs">
@@ -1576,6 +2678,36 @@
         coordinates: [[35.7076, 140.3928], [35.7138, 140.3988], [35.7208, 140.4058]]
       }
     ];
+
+    const facilityDetailMock = {
+      id: 1,
+      title: "フィッシングクラブ ジョイバレー",
+      reviews: 128,
+      hours: "営業中　7:00〜18:00（最終受付 17:00）",
+      tabs: ["概要", "料金・ルール", "施設情報", "池マップ", "釣果・口コミ", "アクセス"],
+      intro: [
+        "自然に囲まれた広大なエリアに、クリアな湧き水が注ぐ管理釣り場です。",
+        "初心者から上級者まで楽しめる多彩なポイントと、充実した設備が魅力。",
+        "大物も狙えるロケーションで、四季を通じて快適に釣りが楽しめます。"
+      ],
+      conditions: {
+        weather: "晴れ",
+        temperature: "23℃",
+        waterTemperature: "18.0℃",
+        wind: "2 m/s",
+        water: "クリア",
+        activity: "★★★★☆"
+      },
+      posts: [
+        { user: "angler_0101", time: "2時間前", fish: "レインボートラウト", size: "55cm", comment: "朝イチの放流魚がアツかった！スプーンで連発しました🔥", likes: 12, comments: 2 },
+        { user: "taka_turi", time: "5時間前", fish: "レインボートラウト", size: "45cm", comment: "天気も良くて最高の釣り日和！楽しかった〜😊", likes: 8, comments: 1 },
+        { user: "fishing_lover", time: "1日前", fish: "ニジマス", size: "40cm", comment: "2時間で8匹釣れました！コンディション良好✨", likes: 15, comments: 3 }
+      ],
+      reviewsList: [
+        { user: "週末アングラー", body: "設備がきれいで初心者でも安心。スタッフさんも親切でした。" },
+        { user: "trout_fan", body: "水質がよく魚影も濃い印象。午前中の反応が特に良かったです。" }
+      ]
+    };
 
     const facilities = [
       {
@@ -1808,6 +2940,8 @@
     let activeSpotLayerCategory = null;
     let isTrafficLayerVisible = false;
     let sidebarCollapsed = true;
+    let viewMode = "map";
+    let registerStep = 1;
     const favorites = Object.fromEntries(facilities.map(facility => [facility.id, false]));
 
     function initMap() {
@@ -1972,7 +3106,7 @@
             </div>
           </div>
           <button class="favorite ${favorites[facility.id] ? "active" : ""}" onclick="event.stopPropagation(); toggleFavorite(${facility.id})" aria-label="お気に入り">${favorites[facility.id] ? "♥" : "♡"}</button>
-          ${facility.officialUrl ? `<a class="card-detail-link" href="${facility.officialUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">詳細 〉</a>` : ""}
+          ${facility.id === 1 ? `<button class="card-detail-link" type="button" onclick="event.stopPropagation(); showFacilityDetail(${facility.id})">詳細 〉</button>` : ""}
         </article>
       `).join("");
     }
@@ -2020,7 +3154,7 @@
             ${notesRow}
           </div>
           <div class="detail-actions">
-            <button class="outline-btn">詳細を見る</button>
+            <button class="outline-btn" onclick="showFacilityDetail(${facility.id})">詳細を見る</button>
             <button class="primary-btn" onclick="fetchRoute(35.6812, 139.7671, ${facility.lat}, ${facility.lng})">⌁ ルート検索</button>
           </div>
         </div>
@@ -2032,6 +3166,531 @@
       renderFacilityList(currentFacilities);
       const selectedFacility = facilities.find(facility => facility.id === selectedFacilityId);
       if (selectedFacility) renderDetailCard(selectedFacility);
+      if (viewMode === "detail") renderFacilityDetailPage(selectedFacility);
+    }
+
+    function showFacilityDetail(id) {
+      const facility = facilities.find(item => item.id === id);
+      if (!facility) return;
+      selectedFacilityId = id;
+      viewMode = "detail";
+      renderFacilityDetailPage(facility);
+      document.body.classList.add("detail-view");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showMapView() {
+      viewMode = "map";
+      document.body.classList.remove("detail-view");
+      document.body.classList.remove("register-view");
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 180);
+    }
+
+    function showRegisterView() {
+      viewMode = "register";
+      registerStep = 1;
+      closeUserMenu();
+      renderRegisterPage();
+      document.body.classList.remove("detail-view");
+      document.body.classList.add("register-view");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleUserMenu() {
+      const menu = document.getElementById("userMenu");
+      const button = document.getElementById("menuButton");
+      const isOpen = menu.classList.toggle("open");
+      button.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    function closeUserMenu() {
+      const menu = document.getElementById("userMenu");
+      const button = document.getElementById("menuButton");
+      menu.classList.remove("open");
+      button.setAttribute("aria-expanded", "false");
+    }
+
+    function renderFacilityDetailPage(facility) {
+      const container = document.getElementById("facilityDetailPage");
+      if (!container) return;
+      const data = facilityDetailMock;
+      container.innerHTML = `
+        <div class="detail-shell">
+          <section class="detail-hero">
+            <div class="gallery-card">
+              <div class="hero-photo">
+                <span class="badge-open">営業中</span>
+                <span class="photo-count">1 / 12</span>
+                <button class="gallery-nav prev" type="button">‹</button>
+                <button class="gallery-nav next" type="button">›</button>
+              </div>
+              <div class="thumb-strip">
+                <div class="gallery-thumb"></div>
+                <div class="gallery-thumb"></div>
+                <div class="gallery-thumb"></div>
+                <div class="gallery-thumb"></div>
+                <div class="gallery-thumb"></div>
+                <div class="gallery-thumb"></div>
+              </div>
+            </div>
+
+            <div class="hero-summary">
+              <button class="detail-fav ${favorites[facility.id] ? "active" : ""}" onclick="toggleFavorite(${facility.id})" aria-label="お気に入り">${favorites[facility.id] ? "♥" : "♡"}</button>
+              <h2>${data.title}</h2>
+              <div class="hero-rating"><span class="star">★</span><span>4.6</span><span style="color:#65787d;font-size:13px;">（${data.reviews}件の口コミ）</span></div>
+              <div class="tags">
+                ${["ルアーOK", "フライOK", "エリアトラウト", "駐車場あり", "レンタルあり", "初心者歓迎", "ナイターあり"].map(tag => `<span class="tag">${tag}</span>`).join("")}
+              </div>
+              <div class="hero-hours">◷ <strong>営業中</strong><span>7:00〜18:00（最終受付 17:00）</span></div>
+            </div>
+          </section>
+
+          <nav class="detail-tabs" aria-label="施設詳細タブ">
+            ${data.tabs.map((tab, index) => `<button class="detail-tab ${index === 0 ? "active" : ""}" type="button">${tab}</button>`).join("")}
+          </nav>
+
+          <div class="detail-content-grid">
+            <div class="detail-main-column">
+              <section class="detail-info-card">
+                <h3>施設紹介</h3>
+                <p class="intro-text">${data.intro.join("<br>")}</p>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>本日のコンディション</h3>
+                <div class="condition-grid">
+                  <div class="condition-item"><div class="condition-label">☀ 天気</div><div class="condition-value">${data.conditions.weather}</div></div>
+                  <div class="condition-item"><div class="condition-label">♨ 気温</div><div class="condition-value">${data.conditions.temperature}</div></div>
+                  <div class="condition-item"><div class="condition-label">♧ 水温</div><div class="condition-value">${data.conditions.waterTemperature}</div></div>
+                  <div class="condition-item"><div class="condition-label">≋ 風速</div><div class="condition-value">${data.conditions.wind}</div></div>
+                  <div class="activity-row"><span>◇ 水質　<strong>${data.conditions.water}</strong></span><span>◎ 魚の活性　<span class="star">${data.conditions.activity}</span></span></div>
+                </div>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>基本情報</h3>
+                <div class="basic-list">
+                  <div class="basic-row"><strong>住所</strong><span>千葉県山武郡芝山町大里486-1</span></div>
+                  <div class="basic-row"><strong>電話</strong><span>0479-77-1234</span></div>
+                  <div class="basic-row"><strong>公式サイト</strong><span><a href="https://joyvalley-fish.com/" target="_blank" rel="noopener noreferrer">https://joyvalley-fish.com ↗</a></span></div>
+                  <div class="basic-row"><strong>定休日</strong><span>火曜日（祝日の場合は営業）</span></div>
+                </div>
+                <button class="nav-button" type="button">⌁ ナビで行く</button>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>池マップ</h3>
+                <div class="pond-map">
+                  <span class="pond-label inlet">インレット<br>（流れ込み）</span>
+                  <span class="pond-label pier">桟橋エリア</span>
+                  <span class="pond-label island">中央の島</span>
+                  <span class="pond-label deep">深場エリア<br>（水深4〜6m）</span>
+                </div>
+                <p style="margin:10px 0 0;color:#536a70;font-size:12px;">※マップをタップで拡大できます</p>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>釣果投稿 <a class="side-more" href="#" onclick="return false;" style="float:right;">もっと見る 〉</a></h3>
+                <div class="catch-grid">
+                  ${data.posts.map(post => `
+                    <article class="catch-card">
+                      <div class="catch-head"><span class="avatar">${post.user.slice(0, 1).toUpperCase()}</span><div>${post.user}<br><span style="color:#73868a;font-weight:500;">${post.time}</span></div></div>
+                      <div class="fish-photo"></div>
+                      <div class="catch-body">
+                        <div class="catch-meta"><span class="mini-tag">${post.fish}</span><span class="mini-tag">${post.size}</span></div>
+                        <div>${post.comment}</div>
+                        <div class="catch-actions"><span>♡ ${post.likes}</span><span>□ ${post.comments}</span></div>
+                      </div>
+                    </article>
+                  `).join("")}
+                </div>
+              </section>
+            </div>
+
+            <aside class="detail-side-column">
+              <section class="detail-info-card">
+                <h3>料金・ルール <a class="side-more" href="#" onclick="return false;" style="float:right;">もっと見る 〉</a></h3>
+                <div class="price-row"><span>大人（中学生以上）</span><strong>4,200円</strong></div>
+                <div class="price-row"><span>子供（小学生以下）</span><strong>2,100円</strong></div>
+                <div class="price-row"><span>延長料金（1時間）</span><strong>500円</strong></div>
+                <ul class="rule-list">
+                  <li>バーブレスフックの使用を推奨します</li>
+                  <li>キャッチ＆リリースが基本です</li>
+                  <li>ゴミは必ず持ち帰りください</li>
+                  <li>詳細は公式サイトをご確認ください</li>
+                </ul>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>設備・サービス</h3>
+                <div class="side-list">
+                  <div class="side-row"><strong>レンタル</strong><span>あり（タックル・ルアー）</span></div>
+                  <div class="side-row"><strong>駐車場</strong><span>100台以上（無料）</span></div>
+                  <div class="side-row"><strong>設備</strong><span>トイレ / 自販機 / 休憩所 / 売店</span></div>
+                  <div class="side-row"><strong>その他</strong><span>ナイター営業あり（〜21:00）</span></div>
+                </div>
+              </section>
+
+              <section class="detail-info-card">
+                <h3>口コミ・評価 <a class="side-more" href="#" onclick="return false;" style="float:right;">もっと見る 〉</a></h3>
+                <div class="review-score">
+                  <div><div class="score-number">4.6</div><div class="star">★★★★☆</div><div style="font-size:12px;color:#65787d;">（128件）</div></div>
+                  <div class="rating-bars">
+                    ${[[5,82],[4,11],[3,4],[2,2],[1,1]].map(row => `<div class="bar-row"><span>${row[0]} ★</span><div class="bar-track"><div class="bar-fill" style="width:${row[1]}%"></div></div><span>${row[1]}%</span></div>`).join("")}
+                  </div>
+                </div>
+                ${data.reviewsList.map(review => `<div class="review"><strong>${review.user}</strong><br>${review.body}</div>`).join("")}
+              </section>
+
+              <section class="detail-info-card">
+                <h3>周辺スポット <a class="side-more" href="#" onclick="return false;" style="float:right;">もっと見る 〉</a></h3>
+                <div class="detail-spot-grid">
+                  ${defaultNearbySpots.map(spot => `<div class="detail-spot"><div class="spot-icon">${spot.icon}</div><div>${spot.category}</div><div style="color:#536a70;margin-top:4px;">${spot.label}</div></div>`).join("")}
+                </div>
+              </section>
+            </aside>
+          </div>
+        </div>
+      `;
+    }
+
+    const registerSteps = ["基本情報", "運営・特徴", "設備・サービス", "写真・池マップ", "確認"];
+
+    function checkPill(label, checked = false) {
+      return `<label class="check-pill"><input type="checkbox" ${checked ? "checked" : ""}> ${label}</label>`;
+    }
+
+    function radioPill(label, name, checked = false) {
+      return `<label class="check-pill"><input type="radio" name="${name}" ${checked ? "checked" : ""}> ${label}</label>`;
+    }
+
+    function renderStepNav() {
+      return registerSteps.map((step, index) => `
+        <div class="step ${registerStep === index + 1 ? "active" : ""}">
+          <span class="step-num">${index + 1}</span>${step}
+        </div>
+      `).join("");
+    }
+
+    function setRegisterStep(step) {
+      registerStep = Math.max(1, Math.min(5, step));
+      renderRegisterPage();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function validateRegisterStep() {
+      const errorBox = document.getElementById("registerErrors");
+      const requiredFields = [...document.querySelectorAll("#registerPage [data-required='true']")];
+      const errors = [];
+
+      requiredFields.forEach(field => {
+        const wrapper = field.closest(".form-field");
+        const label = field.dataset.label || wrapper?.querySelector("label")?.textContent?.replace("*", "").trim() || "必須項目";
+        const isPlaceholderSelect = field.tagName === "SELECT" && field.selectedIndex === 0 && field.options[0]?.textContent.includes("選択");
+        const isEmpty = !String(field.value || "").trim() || isPlaceholderSelect;
+
+        wrapper?.classList.toggle("has-error", isEmpty);
+        if (isEmpty) errors.push(`${label}を入力してください`);
+      });
+
+      if (errors.length) {
+        errorBox.innerHTML = `<strong>未入力の必須項目があります</strong><ul>${errors.map(error => `<li>${error}</li>`).join("")}</ul>`;
+        errorBox.classList.add("show");
+        errorBox.scrollIntoView({ behavior: "smooth", block: "start" });
+        return false;
+      }
+
+      errorBox.classList.remove("show");
+      errorBox.innerHTML = "";
+      return true;
+    }
+
+    function handleRegisterNext() {
+      if (!validateRegisterStep()) return;
+      setRegisterStep(registerStep + 1);
+    }
+
+    function renderBasicRegisterStep() {
+      return `
+        <div class="register-grid single">
+          <div class="form-column">
+            <section class="form-section">
+              <h3>基本情報</h3>
+              <div class="form-grid">
+                <div class="form-field"><label>釣り場名 <span class="required">*</span></label><input data-required="true" data-label="釣り場名" placeholder="例）フィッシングクラブ ジョイバレー"></div>
+                <div class="form-field"><label>ふりがな <span class="required">*</span></label><input data-required="true" data-label="ふりがな" placeholder="例）ふぃっしんぐくらぶ じょいばれー"></div>
+                <div class="form-field"><label>都道府県 <span class="required">*</span></label><select data-required="true" data-label="都道府県"><option>都道府県を選択</option><option>千葉県</option><option>埼玉県</option><option>神奈川県</option></select></div>
+                <div class="form-field"><label>市区町村 <span class="required">*</span></label><select data-required="true" data-label="市区町村"><option>市区町村を選択</option><option>山武郡芝山町</option><option>成田市</option></select></div>
+                <div class="form-field full"><label>住所 <span class="required">*</span></label><input data-required="true" data-label="住所" placeholder="例）千葉県山武郡芝山町大里486-1"></div>
+                <div class="form-field"><label>電話番号</label><input placeholder="例）0479-77-1234"></div>
+                <div class="form-field"><label>公式サイト</label><input placeholder="例）https://example.com"></div>
+                <div class="form-field full"><label>営業時間 <span class="required">*</span></label><div class="inline-fields"><select><option>07:00</option></select><span>〜</span><select><option>18:00</option></select><input placeholder="最終受付 17:00"></div></div>
+                <div class="form-field full"><label>定休日</label><input placeholder="例）火曜日（祝日の場合は営業）"></div>
+                <div class="form-field full"><label>紹介文 <span class="required">*</span></label><textarea data-required="true" data-label="紹介文" placeholder="例）自然に囲まれた広大なエリアに、クリアな湧き水が注ぐ管理釣り場です。初心者から上級者まで楽しめる多彩なポイントと、充実した設備が魅力です。"></textarea><span class="char-count">0 / 300</span></div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <h3>料金・ルール</h3>
+              <div class="form-grid">
+                <div class="form-field"><label>大人 <span class="required">*</span></label><input data-required="true" data-label="大人料金" placeholder="4,200 円"></div>
+                <div class="form-field"><label>子供 <span class="required">*</span></label><input data-required="true" data-label="子供料金" placeholder="2,100 円"></div>
+                <div class="form-field"><label>延長料金</label><input placeholder="500 円"></div>
+                <div class="form-field full"><label>ルール・注意事項 <span class="required">*</span></label><textarea data-required="true" data-label="ルール・注意事項" placeholder="バーブレスフックの使用を推奨します&#10;キャッチ＆リリースが基本です&#10;ゴミは必ず持ち帰りください&#10;詳細は公式サイトをご確認ください"></textarea><span class="char-count">0 / 300</span></div>
+              </div>
+            </section>
+
+            <section class="form-section">
+              <h3>補足情報</h3>
+              <div class="form-grid">
+                <div class="form-field full"><label>主な魚種</label><div class="check-grid">${["ニジマス", "イワナ", "サクラマス", "ブラウントラウト", "その他"].map(item => checkPill(item)).join("")}<input class="helper-input" placeholder="その他の魚種を入力"></div></div>
+                <div class="form-field full"><label>釣り方</label><div class="check-grid">${["ルアー", "フライ", "テンカラ", "その他"].map(item => checkPill(item)).join("")}<input class="helper-input" placeholder="その他の釣り方を入力"></div></div>
+                <div class="form-field full"><label>放流日</label><input placeholder="例）毎週土曜日"></div>
+                <div class="form-field full"><label>釣りエリアの特徴</label><div class="check-grid">${["初心者向け", "中級者向け", "上級者向け", "大型魚が狙える", "ファミリー向け", "ナイター営業あり"].map(item => checkPill(item)).join("")}</div></div>
+                <div class="form-field full"><label>備考</label><textarea placeholder="補足情報を入力してください"></textarea><span class="char-count">0 / 200</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderOperationRegisterStep() {
+      return `
+        <div class="register-grid single">
+          <div class="form-column">
+            <section class="form-section">
+              <h3>運営・特徴</h3>
+              <div class="form-subhead">魚・放流情報</div>
+              <div class="form-grid">
+                <div class="form-field full"><label>主な魚種</label><div class="check-grid">${["ニジマス", "イワナ"].map(item => checkPill(item, true)).join("")}<input class="helper-input" placeholder="その他の魚種を入力"></div></div>
+                <div class="form-field"><label>放流頻度</label><select><option>週1〜2回程度</option><option>毎週末</option><option>不定期</option></select></div>
+                <div class="form-field"><label>放流時間</label><select><option>8:00〜9:00頃</option><option>午前中</option><option>午後</option></select></div>
+                <div class="form-field"><label>放流量（1日あたり）</label><select><option>100〜150kg</option><option>50〜100kg</option><option>150kg以上</option></select></div>
+                <div class="form-field full"><label>放流曜日</label><div class="check-grid">${["月", "火", "水", "木", "金", "土", "日"].map(day => checkPill(day, day === "土" || day === "日")).join("")}</div></div>
+              </div>
+
+              <div class="form-subhead">池・水の情報</div>
+              <div class="form-grid">
+                <div class="form-field"><label>ポンド数</label><input value="3"></div>
+                <div class="form-field"><label>平均水深</label><input value="1.5〜3.0m"></div>
+                <div class="form-field"><label>水質</label><select><option>クリア</option><option>ステイン</option><option>マッディ</option></select></div>
+                <div class="form-field"><label>水源</label><select><option>湧き水</option><option>地下水</option><option>河川水</option></select></div>
+                <div class="form-field"><label>流れ込み</label><div class="check-grid">${["あり", "なし"].map((item, i) => checkPill(item, i === 0)).join("")}</div></div>
+                <div class="form-field"><label>桟橋</label><div class="check-grid">${["あり", "なし"].map((item, i) => checkPill(item, i === 0)).join("")}</div></div>
+              </div>
+
+              <div class="form-subhead">レギュレーション</div>
+              <div class="form-grid">
+                <div class="form-field"><label>シングルフックのみ</label><div class="check-grid">${["はい", "いいえ"].map((item, i) => checkPill(item, i === 0)).join("")}</div></div>
+                <div class="form-field"><label>バーブレスフック必須</label><div class="check-grid">${["はい", "いいえ"].map((item, i) => checkPill(item, i === 0)).join("")}</div></div>
+                <div class="form-field"><label>持ち帰り</label><select><option>キャッチ＆リリースのみ</option><option>一部キープ可</option></select></div>
+                <div class="form-field"><label>キープ数</label><select><option>なし</option><option>5尾まで</option><option>10尾まで</option></select></div>
+                <div class="form-field full"><label>使用禁止ルアー・エサ</label><textarea placeholder="例）ワームの使用禁止、フェザージグ禁止など"></textarea><span class="char-count">0 / 200</span></div>
+              </div>
+
+              <div class="form-subhead">利用者向け情報</div>
+              <div class="check-grid">${["初心者向け", "ファミリー向け", "上級者向け", "女性歓迎", "ナイター営業あり"].map(item => checkPill(item, item !== "上級者向け")).join("")}</div>
+
+              <div class="form-subhead">アクセス情報</div>
+              <div class="form-grid">
+                <div class="form-field"><label>最寄IC</label><input placeholder="例）東金IC"></div>
+                <div class="form-field"><label>から車で</label><input placeholder="20分"></div>
+                <div class="form-field"><label>最寄駅</label><input placeholder="例）JR成東駅"></div>
+                <div class="form-field"><label>から車で</label><input placeholder="15分"></div>
+                <div class="form-field full"><label>送迎サービス</label><div class="check-grid">${["あり", "なし"].map((item, i) => checkPill(item, i === 1)).join("")}</div></div>
+              </div>
+
+              <div class="form-subhead">おすすめポイント <span class="muted">（複数選択可）</span></div>
+              <div class="check-grid">${["初心者でも釣りやすい", "放流量が多い", "大型魚が狙える", "クリアな水質", "景色が良い", "アクセスが良い", "設備が充実", "ナイター営業あり", "レンタル充実", "食事が美味しい"].map((item, index) => checkPill(item, index < 5)).join("")}<input class="helper-input" placeholder="その他のおすすめポイントを入力"></div>
+            </section>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderServiceRegisterStep() {
+      const equipment = ["トイレ", "自動販売機", "休憩所・東屋", "売店", "食堂・レストラン", "レンタル", "Wi-Fi", "BBQエリア", "喫煙所", "シャワー", "ロッカー", "電源（充電可）", "AED", "ゴミ捨て場"];
+      const services = ["レンタルタックル", "ルアー販売", "エサ販売", "ガイドサービス", "釣り教室・スクール", "大会・イベント開催", "ポイントマップ配布", "釣果情報の提供"];
+      return `
+        <div class="register-grid single">
+          <div class="form-column">
+            <section class="form-section">
+              <h3>設備・サービス</h3>
+              <div class="form-subhead">設備</div>
+              <div class="check-grid">${equipment.map((item, index) => checkPill(item, [0, 1, 2, 3, 5, 6, 13].includes(index))).join("")}<input class="helper-input" placeholder="その他の設備を入力"></div>
+
+              <div class="form-subhead">サービス</div>
+              <div class="check-grid">${services.map((item, index) => checkPill(item, [0, 1, 2, 6, 7].includes(index))).join("")}<input class="helper-input" placeholder="その他のサービスを入力"></div>
+
+              <div class="form-subhead">その他情報</div>
+              <div class="form-grid">
+                <div class="form-field full"><label>ペット同伴</label><div class="check-grid">${["可", "条件付きで可", "不可"].map((item, i) => radioPill(item, "pet", i === 0)).join("")}</div></div>
+                <div class="form-field full"><label>バリアフリー対応</label><div class="check-grid">${["対応あり", "一部対応", "対応なし"].map((item, i) => radioPill(item, "barrierFree", i === 1)).join("")}</div></div>
+                <div class="form-field full"><label>備考</label><textarea placeholder="その他の設備・サービスについてご記入ください"></textarea><span class="char-count">0 / 300</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPhotoRegisterStep() {
+      const tagOptions = [
+        "ルアーOK", "フライOK", "テンカラOK", "初心者歓迎", "大物狙い", "高活性",
+        "クリアポンド", "濁りあり", "流れ込みあり", "桟橋あり", "ボートあり", "ナイターあり",
+        "駐車場あり", "レンタルあり", "食事処あり", "売店あり", "トイレあり", "バリアフリー"
+      ];
+      const checkedTags = new Set(["ルアーOK", "フライOK", "初心者歓迎", "ナイターあり", "駐車場あり", "レンタルあり"]);
+      return `
+        <div class="register-grid">
+          <div class="form-column">
+            <section class="form-section">
+              <h3>写真の登録</h3>
+              <div class="form-subhead">メイン写真 <span class="required">*</span></div>
+              <div class="upload-box">▧<br><strong>クリックして画像を選択</strong><br>またはドラッグ＆ドロップ<br><small>推奨サイズ：1200×800px以上</small></div>
+              <div class="form-subhead">サブ写真 <span class="muted">（最大6枚）</span></div>
+              <div class="sub-upload-grid">${Array.from({ length: 6 }, () => `<div class="mini-upload">▧</div>`).join("")}</div>
+              <p style="margin:10px 0 0;color:#607377;font-size:12px;">推奨サイズ：800×600px以上</p>
+            </section>
+
+            <section class="form-section">
+              <h3>池マップの登録</h3>
+              <div class="upload-box">▧<br><strong>池の見取り図やマップをアップロード</strong><br>またはドラッグ＆ドロップ<br><small>推奨サイズ：1200×800px以上<br>手書きの地図でもOKです</small></div>
+            </section>
+          </div>
+
+          <aside class="upload-column">
+            <section class="form-section">
+              <h3>追加の補足画像 <span class="muted">（任意）</span></h3>
+              <div class="sub-upload-grid">${["施設案内", "料金表", "注意事項", "駐車場案内"].map(label => `<div class="mini-upload"><span>${label}</span></div>`).join("")}</div>
+            </section>
+            <section class="form-section">
+              <h3>特徴タグ <span class="muted">（複数選択可）</span></h3>
+              <div class="check-grid">${tagOptions.map(tag => checkPill(tag, checkedTags.has(tag))).join("")}</div>
+            </section>
+          </aside>
+        </div>
+      `;
+    }
+
+    function renderConfirmRegisterStep() {
+      return `
+        <div class="register-grid confirm">
+          <div class="form-column">
+            <div class="confirm-intro">
+              <h3>登録内容の確認</h3>
+              <p>入力内容をご確認のうえ、登録を完了してください。</p>
+            </div>
+            <div class="confirm-grid">
+              <section class="confirm-card">
+                <h3>基本情報</h3>
+                <div class="confirm-list">
+                  <span><strong>釣り場名：</strong>フィッシングクラブ ジョイバレー</span>
+                  <span><strong>ふりがな：</strong>ふぃっしんぐくらぶ じょいばれー</span>
+                  <span><strong>エリア：</strong>千葉県 / 山武郡芝山町</span>
+                  <span><strong>住所：</strong>千葉県山武郡芝山町大里486-1</span>
+                  <span><strong>電話番号：</strong>0479-77-1234</span>
+                  <span><strong>公式サイト：</strong>https://joyvalley-fish.com</span>
+                  <span><strong>営業時間：</strong>07:00〜18:00（最終受付 17:00）</span>
+                  <span><strong>定休日：</strong>火曜日（祝日の場合は営業）</span>
+                  <span><strong>紹介文：</strong>自然に囲まれた広大なエリアに、クリアな湧き水が注ぐ管理釣り場です。</span>
+                </div>
+              </section>
+              <section class="confirm-card">
+                <h3>料金・ルール</h3>
+                <div class="confirm-list">
+                  <span><strong>大人：</strong>4,200円</span>
+                  <span><strong>子供：</strong>2,100円</span>
+                  <span><strong>延長料金：</strong>500円</span>
+                  <span><strong>注意事項：</strong>バーブレスフックの使用を推奨します。キャッチ＆リリースが基本です。</span>
+                </div>
+              </section>
+              <section class="confirm-card">
+                <h3>運営・特徴</h3>
+                <div class="confirm-list">
+                  <span><strong>主な魚種：</strong>ニジマス、イワナ</span>
+                  <span><strong>放流頻度：</strong>週1〜2回程度</span>
+                  <span><strong>放流曜日：</strong>土・日</span>
+                  <span><strong>ポンド数：</strong>3</span>
+                  <span><strong>平均水深：</strong>1.5〜3.0m</span>
+                  <span><strong>水質：</strong>クリア</span>
+                  <span><strong>ナイター営業：</strong>あり</span>
+                  <span><strong>アクセス：</strong>東金ICから車で20分</span>
+                </div>
+              </section>
+              <section class="confirm-card">
+                <h3>設備・サービス</h3>
+                <div class="confirm-list">
+                  <span>トイレ、自動販売機、休憩所・東屋、売店、レンタル、Wi-Fi、ゴミ捨て場</span>
+                  <span>レンタルタックル、ルアー販売、エサ販売、ポイントマップ配布、釣果情報の提供</span>
+                  <span><strong>ペット同伴：</strong>可</span>
+                  <span><strong>バリアフリー対応：</strong>一部対応</span>
+                </div>
+              </section>
+              <section class="confirm-card">
+                <h3>登録する写真・マップ</h3>
+                <div class="preview-photo"></div>
+                <div class="preview-thumbs">${Array.from({ length: 6 }, () => `<div class="preview-thumb"></div>`).join("")}</div>
+                <div class="preview-photo" style="margin-top:10px;min-height:96px;"></div>
+                <div class="tag-list">${["ルアーOK", "フライOK", "初心者歓迎", "ナイターあり", "駐車場あり", "レンタルあり"].map(tag => `<span class="tag">◆ ${tag}</span>`).join("")}</div>
+              </section>
+            </div>
+          </div>
+
+          <aside class="upload-column">
+            <section class="tips-card">
+              <h3>登録のポイント</h3>
+              <ul>
+                <li>正確な情報を入力することで、ユーザーに信頼される釣り場になります</li>
+                <li>写真は明るく、実際の雰囲気が伝わるものを選びましょう</li>
+                <li>審査には1〜3営業日程度かかります</li>
+                <li>登録後も情報の編集・更新が可能です</li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      `;
+    }
+
+    function renderRegisterStepContent() {
+      if (registerStep === 1) return renderBasicRegisterStep();
+      if (registerStep === 2) return renderOperationRegisterStep();
+      if (registerStep === 3) return renderServiceRegisterStep();
+      if (registerStep === 4) return renderPhotoRegisterStep();
+      return renderConfirmRegisterStep();
+    }
+
+    function renderRegisterPage() {
+      const container = document.getElementById("registerPage");
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="register-shell">
+          <button class="register-back" type="button" onclick="showMapView()">← マップに戻る</button>
+          <div class="register-card">
+            <div class="register-head">
+              <h2>釣り場を登録する</h2>
+              <p>新しい管理釣り場の情報を登録できます。審査後、サイトに掲載されます。</p>
+            </div>
+
+            <div class="steps">
+              ${renderStepNav()}
+            </div>
+
+            <div class="register-error-summary" id="registerErrors"></div>
+
+            ${renderRegisterStepContent()}
+
+            <div class="register-actions">
+              <button class="draft-btn" type="button">下書き保存</button>
+              <button class="next-btn" type="button" onclick="${registerStep < 5 ? "handleRegisterNext()" : "return false"}">${registerStep < 5 ? "次へ進む" : "登録内容を送信する"}</button>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function renderNearbySpots(facility) {
@@ -2202,6 +3861,18 @@
 
       document.getElementById("sidebarClose").addEventListener("click", () => {
         setSidebarCollapsed(true);
+      });
+
+      document.getElementById("backToMap").addEventListener("click", showMapView);
+      document.getElementById("menuButton").addEventListener("click", event => {
+        event.stopPropagation();
+        toggleUserMenu();
+      });
+      document.getElementById("openRegister").addEventListener("click", showRegisterView);
+      document.addEventListener("click", event => {
+        if (!event.target.closest("#userMenu") && !event.target.closest("#menuButton")) {
+          closeUserMenu();
+        }
       });
 
       document.getElementById("searchInput").addEventListener("input", event => {
